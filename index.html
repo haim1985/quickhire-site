@@ -380,6 +380,23 @@
     window.location.href = `mailto:${RECEIVER_EMAIL}?subject=${subject}&body=${body}`;
   }
 
-</script>
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAvPicIsM1k2sIJGTZhBSLWhvZf-jMlSdw",
+    authDomain: "quickhire-9df90.firebaseapp.com",
+    projectId: "quickhire-9df90",
+    storageBucket: "quickhire-9df90.firebasestorage.app",
+    messagingSenderId: "1092742554135",
+    appId: "1:1092742554135:web:b01f260d1da74dccfff252"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
 </body>
 </html>
