@@ -380,13 +380,17 @@
     window.location.href = `mailto:${RECEIVER_EMAIL}?subject=${subject}&body=${body}`;
   }
 
-  <script type="module">
-  // Import the functions you need from the SDKs you need
+ <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  import { 
+    getAuth, 
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged 
+  } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
-  // Your web app's Firebase configuration
+  // Firebase config שלך
   const firebaseConfig = {
     apiKey: "AIzaSyAvPicIsM1k2sIJGTZhBSLWhvZf-jMlSdw",
     authDomain: "quickhire-9df90.firebaseapp.com",
@@ -396,7 +400,54 @@
     appId: "1:1092742554135:web:b01f260d1da74dccfff252"
   };
 
-  // Initialize Firebase
+  // Initialize
   const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Signup
+  function signupUser(email, password) {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((cred) => alert("✅ User created: " + cred.user.email))
+      .catch((err) => alert("❌ Signup failed: " + err.message));
+  }
+
+  // Login
+  function loginUser(email, password) {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((cred) => alert("✅ Logged in as " + cred.user.email))
+      .catch((err) => alert("❌ Login failed: " + err.message));
+  }
+
+  // Logout
+  function logoutUser() {
+    signOut(auth).then(() => alert("👋 Logged out"));
+  }
+
+  // Watch auth state
+  onAuthStateChanged(auth, (user) => {
+    const el = document.getElementById("current-user");
+    el.textContent = user ? `Current user: ${user.email}` : "No user logged in";
+  });
+
+  // Button events
+  document.getElementById("signup-btn").addEventListener("click", () => {
+    const email = prompt("Enter new email:");
+    const password = prompt("Enter new password (min 6 chars):");
+    if (email && password) signupUser(email, password);
+  });
+
+  document.getElementById("login-jobseeker").addEventListener("click", () => {
+    const email = prompt("Enter Job Seeker email:");
+    const password = prompt("Enter password:");
+    if (email && password) loginUser(email, password);
+  });
+
+  document.getElementById("login-employer").addEventListener("click", () => {
+    const email = prompt("Enter Employer email:");
+    const password = prompt("Enter password:");
+    if (email && password) loginUser(email, password);
+  });
+
+  document.getElementById("logout-btn").addEventListener("click", logoutUser);
 </body>
 </html>
