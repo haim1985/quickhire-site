@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>QuickHire – Full Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --pearl:#f8f5f0;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#2563eb;
+      --accent-2:#16a34a;
+      --text:#0f172a;
+    }
+    *{box-sizing:border-box}
+    body{font-family:'Assistant',sans-serif;background:var(--pearl);color:var(--text);margin:0;line-height:1.4}
+    .container{max-width:1200px;margin:0 auto;padding:20px}
+    .navbar {display:flex;justify-content:space-between;align-items:center;gap:16px;background:transparent;padding:12px 0;position:sticky;top:0;z-index:1000}
+    .nav-links{display:flex;gap:18px;align-items:center}
+    .nav-links a{color:var(--text);text-decoration:none;font-weight:600;padding:8px;border-radius:8px}
+    .nav-links a:hover{background:rgba(37,99,235,0.08);color:var(--accent)}
+    header{padding:28px 0}
+    header h1{margin:0;font-size:28px}
+    header p{margin:6px 0;color:var(--muted)}
+    .hero{display:flex;gap:20px;align-items:center;justify-content:space-between;margin-top:18px}
+    .hero .left{flex:1}
+    .hero .right{width:320px}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(16,24,40,0.06);margin-bottom:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    input,select,textarea{width:100%;padding:10px;border:1px solid #e6e6e6;border-radius:8px;margin-top:8px}
+    .btn{display:inline-block;padding:10px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600}
+    .btn-primary{background:var(--accent);color:white}
+    .btn-ghost{background:transparent;border:1px solid #e6e6e6}
+    .jobs-list{display:grid;gap:12px}
+    .job-item{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .small{font-size:13px;color:var(--muted)}
+    .carousel{position:relative;overflow:hidden;height:110px;padding:12px;border-radius:10px}
+    .carousel-item{position:absolute;width:100%;opacity:0;transition:opacity .8s;font-size:16px;text-align:center;padding:12px}
+    .carousel-item.active{opacity:1;position:relative}
+    .footer{padding:20px 0;text-align:center;color:var(--muted)}
+    .stars span{cursor:pointer;font-size:20px;padding:2px}
+    @media(max-width:900px){
+      .grid-3{grid-template-columns:1fr}
+      .grid-2{grid-template-columns:1fr}
+      .hero{flex-direction:column}
+      .hero .right{width:100%}
+      .nav-links{display:none}
+    }
+    .note{background:rgba(37,99,235,0.06);padding:10px;border-radius:8px;color:var(--accent);font-weight:600}
+    .muted-box{background:#fff;border-radius:10px;padding:12px;color:var(--muted)}
+    .contact-row{display:flex;gap:12px}
+    .contact-row > *{flex:1}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="navbar" aria-label="Main navigation">
+      <div>
+        <strong>QuickHire</strong>
+        <div class="small">Jobs • Ratings • Ads • Payments</div>
+      </div>
+      <div class="nav-links" id="navLinks">
+        <a href="#home">Home</a>
+        <a href="#jobs">Jobs</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#ads">Ads</a>
+        <a href="#ratings">Ratings</a>
+        <a href="#guide">Guide</a>
+        <a href="#contact">Contact</a>
+        <select id="langSelect" style="margin-left:8px">
+          <option value="en">English</option>
+          <option value="he">עברית</option>
+          <option value="ru">Русский</option>
+          <option value="ar">العربية</option>
+          <option value="ka">ქართული</option>
+        </select>
+      </div>
+    </nav>
+
+    <header id="home">
+      <h1>QuickHire</h1>
+      <p>Multilingual job board with ads, ratings and PayPal payments</p>
+
+      <div class="hero">
+        <div class="left">
+          <div class="card">
+            <h3>Find talent or get hired — fast</h3>
+            <p class="small">Post jobs, browse candidates, and manage applications. Multi-language support included.</p>
+            <div style="margin-top:12px">
+              <button class="btn btn-primary" onclick="scrollToId('jobs')">Browse Jobs</button>
+              <button class="btn btn-ghost" onclick="scrollToId('pricing')">Pricing</button>
+            </div>
+          </div>
+
+          <section class="section" id="jobs">
+            <h2>Jobs</h2>
+            <div class="muted-box">
+              <input id="jobSearch" placeholder="Search by title..." />
+            </div>
+            <div class="jobs-list" id="jobsGrid" style="margin-top:12px"></div>
+            <div style="margin-top:10px">
+              <button class="btn btn-primary" onclick="postJob()">+ Post Job</button>
+            </div>
+          </section>
+        </div>
+
+        <aside class="right" style="width:320px">
+          <div class="card">
+            <h4>Quick actions</h4>
+            <div style="margin-top:8px">
+              <button class="btn btn-primary" onclick="login('jobseeker')">Login as Job Seeker</button>
+              <button class="btn btn-primary" onclick="login('employer')">Login as Employer</button>
+            </div>
+            <div style="margin-top:12px">
+              <div class="small">Current user: <span id="currentUser">—</span></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px" id="pricingCard">
+            <h4>Pricing</h4>
+            <div class="small">Job seeker: free (2 apps/day) or $1/month for unlimited</div>
+            <div class="small" style="margin-top:6px">Employer: $10/month for unlimited job posts</div>
+            <div style="margin-top:10px">
+              <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" style="margin-bottom:8px">
+                <input type="hidden" name="cmd" value="_xclick">
+                <input type="hidden" name="business" value="specialservicemg@gmail.com">
+                <input type="hidden" name="item_name" value="QuickHire Job Seeker Monthly">
+                <input type="hidden" name="amount" value="1.00">
+                <input type="hidden" name="currency_code" value="USD">
+                <input type="submit" class="btn btn-primary" value="Pay $1 (Job Seeker)">
+              </form>
+              <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                <input type="hidden" name="cmd" value="_xclick">
+                <input type="hidden" name="business" value="specialservicemg@gmail.com">
+                <input type="hidden" name="item_name" value="QuickHire Employer Monthly">
+                <input type="hidden" name="amount" value="10.00">
+                <input type="hidden" name="currency_code" value="USD">
+                <input type="submit" class="btn btn-primary" value="Pay $10 (Employer)">
+              </form>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <section class="section card" id="pricing" style="margin-top:20px">
+      <h3>Pricing Plans</h3>
+      <div class="grid-2">
+        <div>
+          <h4>Job Seekers</h4>
+          <p class="small">Upload CV (form) — up to 2 applications/day free. Unlimited for $1/month.</p>
+        </div>
+        <div>
+          <h4>Employers</h4>
+          <p class="small">Unlimited job postings with $10/month subscription.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card" id="ads">
+      <h3>Business Ads <span class="small">(<em>דוגמה בלבד</em>)</span></h3>
+      <div class="carousel" id="adsCarousel">
+        <div class="carousel-item active">🍔 Dani’s Burgers – Best burgers in town!</div>
+        <div class="carousel-item">🏋️ Fit Studio – Gym & Fitness</div>
+        <div class="carousel-item">🌸 Flower Shop – Fresh flowers every day</div>
+        <div class="carousel-item">🚚 Fast Movers – Moving company</div>
+      </div>
+      <div style="margin-top:10px">
+        <button class="btn btn-primary" onclick="addAd()">+ Add Ad (text only)</button>
+      </div>
+    </section>
+
+    <section class="section card" id="ratings">
+      <h3>Top Rated Workers</h3>
+      <div id="workersGrid"></div>
+    </section>
+
+    <section class="section card" id="guide">
+      <h3>How to Post a Job</h3>
+      <ol>
+        <li>Click “Post Job”</li>
+        <li>Fill title, company, location, description</li>
+        <li>Submit and your job will appear</li>
+      </ol>
+    </section>
+
+    <section class="section card" id="contact">
+      <h3>Contact Us</h3>
+      <p class="small">Use the form below to send us a message — it will be delivered to <strong>servicesquickhire@gmail.com</strong> (replace with your preferred address if needed).</p>
+
+      <div class="card" style="background:#fff;">
+        <form id="contactForm">
+          <div class="contact-row">
+            <input type="text" id="cname" placeholder="Your name" required>
+            <input type="email" id="cemail" placeholder="Your email" required>
+          </div>
+          <input type="text" id="csubject" placeholder="Subject" required>
+          <textarea id="cmessage" rows="4" placeholder="Message" required></textarea>
+          <div style="margin-top:8px">
+            <button class="btn btn-primary" type="submit">Send Message</button>
+            <button class="btn btn-ghost" type="button" onclick="openMailClient()">Open Mail Client</button>
+          </div>
+          <p class="small" style="margin-top:8px">Note: To receive messages automatically, sign up at Formspree and replace FORM_ENDPOINT in the script with your form ID. For now the form will attempt to POST to Formspree and fallback to opening your mail client.</p>
+        </form>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="small">© <span id="year"></span> QuickHire</div>
+      <div style="margin-top:8px" class="small">Contact: servicesquickhire@gmail.com</div>
+    </footer>
+
+  </div>
+
+<script>
+  // ---- Config ----
+  const FORM_ENDPOINT = 'https://formspree.io/f/yourFormID'; // << REPLACE with your Formspree form endpoint (after signup) for automatic email delivery
+  const RECEIVER_EMAIL = 'servicesquickhire@gmail.com';
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Smooth scroll helper
+  function scrollToId(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+
+  // Language translations (basic labels)
+  const translations = {
+    en:{jobsTitle:'Jobs', loginTitle:'Login (Demo)'},
+    he:{jobsTitle:'משרות', loginTitle:'התחברות'},
+    ru:{jobsTitle:'Вакансии', loginTitle:'Войти'},
+    ar:{jobsTitle:'وظائف', loginTitle:'تسجيل الدخول'},
+    ka:{jobsTitle:'სამუშაოები', loginTitle:'შესვლა'}
+  };
+  document.getElementById('langSelect').addEventListener('change', e=>{
+    const lang = e.target.value;
+    document.getElementById('jobs').querySelector('h2')?.innerText = translations[lang]?.jobsTitle || 'Jobs';
+    document.getElementById('loginTitle').innerText = translations[lang]?.loginTitle || 'Login (Demo)';
+    document.body.dir = (lang==='he' || lang==='ar') ? 'rtl':'ltr';
+  });
+
+  // --- Simple auth demo ---
+  let currentUser = null;
+  function login(type){
+    currentUser = type;
+    document.getElementById('currentUser').innerText = type;
+    alert('Logged in as ' + type + ' (demo)');
+  }
+
+  // Jobs demo + apply limits
+  let jobs = [
+    {title:'Frontend Dev', company:'SkyApps', location:'Tel Aviv'},
+    {title:'Product Manager', company:'Finix', location:'Herzliya'},
+    {title:'Data Analyst', company:'QData', location:'Remote'}
+  ];
+  function renderJobs(){
+    const q = document.getElementById('jobSearch').value.toLowerCase();
+    const grid = document.getElementById('jobsGrid');
+    grid.innerHTML = '';
+    jobs.filter(j=>j.title.toLowerCase().includes(q)).forEach(j=>{
+      const el = document.createElement('div'); el.className='card job-item';
+      el.innerHTML = `<div><strong>${j.title}</strong><div class="small">${j.company} — ${j.location}</div></div>
+                      <div><button class="btn btn-primary" onclick="applyJob('${j.title}')">Apply</button></div>`;
+      grid.appendChild(el);
+    });
+  }
+  renderJobs();
+  document.getElementById('jobSearch').addEventListener('input', renderJobs);
+
+  // Post job
+  function postJob(){
+    if(currentUser !== 'employer'){ alert('Only employers can post jobs (demo).'); return;}
+    const title = prompt('Job title:'); if(!title) return;
+    const company = prompt('Company:') || 'Company';
+    const location = prompt('Location:') || 'Remote';
+    jobs.unshift({title,company,location});
+    renderJobs();
+  }
+
+  // Applications limit logic (localStorage per day)
+  function applyJob(title){
+    if(currentUser !== 'jobseeker'){ alert('Please login as Job Seeker to apply.'); return; }
+    const today = new Date().toISOString().split('T')[0];
+    const apps = JSON.parse(localStorage.getItem('quickhire_apps')||'{}');
+    apps[today] = apps[today] || 0;
+    if(apps[today] >= 2){
+      alert('Daily free limit reached. Upgrade for $1/month.');
+      return;
+    }
+    apps[today]++;
+    localStorage.setItem('quickhire_apps', JSON.stringify(apps));
+    alert('Applied to ' + title);
+  }
+
+  // Ads carousel
+  let adsIndex = 0;
+  setInterval(()=>{
+    const items = document.querySelectorAll('.carousel-item');
+    items.forEach((el,i)=>el.classList.toggle('active', i===adsIndex));
+    adsIndex = (adsIndex+1) % items.length;
+  }, 3500);
+  function addAd(){
+    const text = prompt('Enter ad text (text only):');
+    if(!text) return;
+    const div = document.createElement('div'); div.className='carousel-item'; div.textContent=text;
+    document.getElementById('adsCarousel').appendChild(div);
+  }
+
+  // Workers + ratings (localStorage)
+  let workers = [
+    {name:'Dana Levi', role:'Designer', rating:4.6, notes:[]},
+    {name:'Oren Azulay', role:'Fullstack Dev', rating:4.2, notes:[]},
+    {name:'Svetlana Petrov', role:'QA Engineer', rating:4.8, notes:[]}
+  ];
+  function renderWorkers(){
+    const container = document.getElementById('workersGrid'); container.innerHTML='';
+    workers.forEach((w,idx)=>{
+      const el = document.createElement('div'); el.className='card';
+      el.innerHTML = `<div><strong>${w.name}</strong><div class="small">${w.role}</div>
+        <div class="stars" style="margin-top:8px">${[1,2,3,4,5].map(n=>`<span onclick="rate(${idx},${n})">${n<=Math.round(w.rating)?'★':'☆'}</span>`).join('')}</div>
+        <div class="small" style="margin-top:8px">Rating: ${w.rating.toFixed(1)}</div>
+        <div style="margin-top:8px"><button class="btn btn-ghost" onclick="openProfile(${idx})">View / Add Report</button></div></div>`;
+      container.appendChild(el);
+    });
+  }
+  function rate(i,stars){
+    workers[i].rating = (workers[i].rating + stars)/2;
+    saveWorkers(); renderWorkers();
+  }
+  function openProfile(i){
+    const note = prompt('Add a short report or note about this worker:');
+    if(!note) return;
+    workers[i].notes.push({date:new Date().toISOString(), text:note});
+    saveWorkers();
+    alert('Report saved locally (demo). Employers can view it here.');
+  }
+  function saveWorkers(){ localStorage.setItem('quickhire_workers', JSON.stringify(workers)); }
+  function loadWorkers(){ const data = localStorage.getItem('quickhire_workers'); if(data) workers = JSON.parse(data); }
+  loadWorkers(); renderWorkers();
+
+  // Popup ad
+  setTimeout(()=>{ document.getElementById('adsCarousel').classList.add('visible'); }, 2500);
+
+  // Contact form handling: attempt Formspree POST, fallback to mailto
+  document.getElementById('contactForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const name = document.getElementById('cname').value.trim();
+    const email = document.getElementById('cemail').value.trim();
+    const subject = document.getElementById('csubject').value.trim();
+    const message = document.getElementById('cmessage').value.trim();
+    if(!name||!email||!subject||!message){ alert('Please fill all fields'); return; }
+
+    // Try Formspree
+    try{
+      const res = await fetch(FORM_ENDPOINT, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body: JSON.stringify({name, email, subject, message})
+      });
+      if(res.ok){
+        alert('Message sent (via Formspree).');
+        this.reset();
+        return;
+      } else {
+        console.warn('Formspree response', res.status);
+      }
+    }catch(err){
+      console.warn('Formspree error', err);
+    }
+
+    // Fallback: open mail client with mailto
+    const mailto = `mailto:${RECEIVER_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent('Name: '+name+'\\nEmail: '+email+'\\n\\n'+message)}`;
+    window.location.href = mailto;
+  });
+
+  function openMailClient(){
+    const subject = encodeURIComponent('Contact from QuickHire');
+    const body = encodeURIComponent('Hello,%0A%0AWrite your message here.%0A');
+    window.location.href = `mailto:${RECEIVER_EMAIL}?subject=${subject}&body=${body}`;
+  }
+
+</script>
+</body>
+</html>
