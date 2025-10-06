@@ -1,389 +1,130 @@
-// =========================
-// QuickHire Single Script
-// =========================
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuickHire – פלטפורמת השמה</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&family=Rubik:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase (compat so we can use a single script) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <!-- PayPal -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AWoW0dpbH_Ihf_2CWv5nTGMKy79eGneATxUft33orCWJmxIyUyIezjz7apOjXfVK3CRWynz6v8MggFhz&components=buttons&vault=true&intent=subscription"></script>
+</head>
+<body>
+  <header class="topbar container">
+    <div class="brand">QuickHire</div>
+    <nav class="nav">
+      <a data-i18n="nav_home" href="#home">ראשי</a>
+      <a data-i18n="nav_jobs" href="#jobs">משרות</a>
+      <a data-i18n="nav_employers" href="#employers">מעסיקים</a>
+      <a data-i18n="nav_pricing" href="#pricing">מנוי</a>
+      <a data-i18n="nav_contact" href="#contact">צור קשר</a>
+    </nav>
+    <select id="langSelect" class="lang">
+      <option value="he">עברית</option>
+      <option value="en">English</option>
+      <option value="ru">Русский</option>
+      <option value="ka">ქართული</option>
+      <option value="hi">हिन्दी</option>
+    </select>
+  </header>
 
-// ---------- Config (EDIT HERE) ----------
-// 1) Firebase Config (paste your real config)
-const firebaseConfig = {
-  apiKey: "REPLACE_API_KEY", // e.g. AIza...
-  authDomain: "quickhire-9df90.firebaseapp.com",
-  projectId: "quickhire-9df90",
-  storageBucket: "quickhire-9df90.appspot.com",
-  messagingSenderId: "REPLACE_SENDER_ID",
-  appId: "REPLACE_APP_ID"
-};
+  <section id="home" class="hero container card">
+    <div>
+      <h1 data-i18n="hero_title">מציאת עבודה מהירה, חכמה ובינלאומית</h1>
+      <p data-i18n="hero_sub">פרסום משרות לפי מדינה/גלובלי, דירוג עובדים ומעסיקים ותשלום מנוי מאובטח בפייפאל.</p>
+      <div class="cta">
+        <a href="#pricing" class="btn primary" data-i18n="cta_start">צא לדרך</a>
+        <a href="#jobs" class="btn ghost" data-i18n="cta_find">חפש משרה</a>
+      </div>
+    </div>
+  </section>
 
-// 2) PayPal Plan IDs (already provided)
-const PLAN_JOBSEEKER = "P-8AF53156WM20433KND5BGZQ";
-const PLAN_EMPLOYER  = "P-50PZ57320D270111MNDR7CSA";
+  <section id="jobs" class="container card">
+    <h2 data-i18n="jobs_title">חיפוש משרות</h2>
+    <div class="grid2">
+      <label>
+        <span data-i18n="label_country">מדינה</span>
+        <input id="jobCountry" placeholder="Israel">
+      </label>
+      <label>
+        <span data-i18n="label_city">עיר</span>
+        <input id="jobCity" placeholder="Tel Aviv">
+      </label>
+    </div>
+    <button id="btnSearch" class="btn" data-i18n="btn_search">חפש</button>
+    <div id="jobsResults" class="list"></div>
+  </section>
 
-// 3) Contact email fallback
-const CONTACT_EMAIL = "servicesquickhire@gmail.com";
+  <section id="employers" class="container card">
+    <h2 data-i18n="emp_title">למעסיקים</h2>
+    <p data-i18n="emp_text">פרסם משרה בקלות והגדל חשיפה מקומית או גלובלית.</p>
+    <div class="grid2">
+      <label>
+        <span data-i18n="label_job">תפקיד</span>
+        <input id="postJobTitle" placeholder="Full-Stack Developer">
+      </label>
+      <label>
+        <span data-i18n="label_desc">תיאור</span>
+        <textarea id="postJobDesc" rows="3" placeholder="דרישות תפקיד..."></textarea>
+      </label>
+      <label>
+        <span data-i18n="label_country">מדינה</span>
+        <input id="postCountry" placeholder="Israel">
+      </label>
+      <label>
+        <span data-i18n="label_city">עיר</span>
+        <input id="postCity" placeholder="Tel Aviv">
+      </label>
+    </div>
+    <button id="btnPostJob" class="btn" data-i18n="btn_post">פרסם</button>
+  </section>
 
-// ---------- i18n ----------
-const I18N = {
-  he: {
-    nav_home: "דף הבית",
-    nav_jobs: "חיפוש עבודה",
-    nav_employers: "מעסיקים",
-    nav_plans: "מנויים",
-    nav_contact: "צור קשר",
-    btn_login: "כניסה",
-    btn_signup: "הרשמה",
-    hero_title: "מציאת עבודה ופרסום משרות — מהר, גלובלי ומהודר",
-    hero_sub: "ריבוי שפות, דירוגים, פרסום לעסקים, ותשלומי מנוי מאובטחים ב־PayPal",
-    cta_find_jobs: "חפש משרות",
-    cta_post_job: "פרסם משרה",
-    jobs_title: "חיפוש משרות",
-    label_country: "מדינה",
-    label_city: "עיר",
-    btn_search: "חיפוש",
-    btn_near_me: "משרות סביבי",
-    btn_global: "גלובלי",
-    employers_title: "אזור מעסיקים",
-    post_job: "פרסום משרה",
-    label_title: "כותרת",
-    label_language: "שפה נדרשת",
-    label_desc: "תיאור",
-    btn_post_job: "פרסם",
-    rate_entities: "דירוגים",
-    label_rate_worker: "דירוג עובד",
-    label_rate_employer: "דירוג מעסיק",
-    btn_submit: "שלח",
-    plans_title: "מסלולי מנוי",
-    plan_jobseeker: "מחפש עבודה",
-    plan_employer: "מעסיק",
-    contact_title: "צור קשר",
-    label_name: "שם",
-    label_email: "אימייל",
-    label_message: "הודעה",
-    btn_send: "שלח"
-  },
-  en: {
-    nav_home: "Home", nav_jobs: "Jobs", nav_employers: "Employers", nav_plans: "Plans", nav_contact: "Contact",
-    btn_login: "Log in", btn_signup: "Sign up",
-    hero_title: "Find jobs & post openings — fast, global, refined",
-    hero_sub: "Multilingual, ratings, business ads, and secure PayPal subscriptions",
-    cta_find_jobs: "Find jobs", cta_post_job: "Post a job",
-    jobs_title: "Job Search", label_country: "Country", label_city: "City",
-    btn_search: "Search", btn_near_me: "Near me", btn_global: "Global",
-    employers_title: "Employers", post_job: "Post a job",
-    label_title: "Title", label_language: "Required language", label_desc: "Description",
-    btn_post_job: "Publish",
-    rate_entities: "Ratings", label_rate_worker: "Rate worker", label_rate_employer: "Rate employer",
-    btn_submit: "Submit",
-    plans_title: "Subscription Plans", plan_jobseeker: "Job Seeker", plan_employer: "Employer",
-    contact_title: "Contact", label_name: "Name", label_email: "Email", label_message: "Message", btn_send: "Send"
-  },
-  ru: {
-    nav_home: "Главная", nav_jobs: "Вакансии", nav_employers: "Работодателям", nav_plans: "Подписки", nav_contact: "Контакты",
-    btn_login: "Войти", btn_signup: "Регистрация",
-    hero_title: "Поиск работы и размещение вакансий — быстро и глобально",
-    hero_sub: "Мультиязычность, рейтинги, реклама и безопасные подписки PayPal",
-    cta_find_jobs: "Найти работу", cta_post_job: "Добавить вакансию",
-    jobs_title: "Поиск вакансий", label_country: "Страна", label_city: "Город",
-    btn_search: "Поиск", btn_near_me: "Рядом", btn_global: "Глобально",
-    employers_title: "Работодатели", post_job: "Добавить вакансию",
-    label_title: "Название", label_language: "Язык", label_desc: "Описание",
-    btn_post_job: "Опубликовать",
-    rate_entities: "Рейтинги", label_rate_worker: "Оценить работника", label_rate_employer: "Оценить работодателя",
-    btn_submit: "Отправить",
-    plans_title: "Тарифы", plan_jobseeker: "Соискатель", plan_employer: "Работодатель",
-    contact_title: "Связаться", label_name: "Имя", label_email: "Email", label_message: "Сообщение", btn_send: "Отправить"
-  },
-  ka: {
-    nav_home: " მთავარი", nav_jobs: "ვაკანსიები", nav_employers: "დამსაქმებლები", nav_plans: "გეგმა", nav_contact: "კონტაქტი",
-    btn_login: "შესვლა", btn_signup: "რეგისტრაცია",
-    hero_title: "სამუშაოს მოძებნა და ვაკანსიის გამოქვეყნება — სწრაფად და გლობალურად",
-    hero_sub: "მრავალენოვნება, რეიტინგები, რეკლამა და PayPal გამოწერები",
-    cta_find_jobs: "მოძებნე სამუშაო", cta_post_job: "გამოქვეყნი ვაკანსია",
-    jobs_title: "ვაკანსიების ძიება", label_country: "ქვეყანა", label_city: "ქალაქი",
-    btn_search: "ძებნა", btn_near_me: "ჩემთან ახლოს", btn_global: "გლობალური",
-    employers_title: "დამსაქმებლები", post_job: "ვაკანსიის გამოქვეყნება",
-    label_title: "სათაური", label_language: "საჭირო ენა", label_desc: "აღწერა",
-    btn_post_job: "გამოქვეყნება",
-    rate_entities: "რეიტინგები", label_rate_worker: "დასაქმებულის რეიტინგი", label_rate_employer: "დამსაქმებლის რეიტინგი",
-    btn_submit: "გაგზავნა",
-    plans_title: "გამოწერის გეგმები", plan_jobseeker: "მოძიებლი", plan_employer: "დამსაქმებელი",
-    contact_title: "კონტაქტი", label_name: "სახელი", label_email: "ელ.ფოსტა", label_message: "შეტყობინება", btn_send: "გაგზავნა"
-  },
-  hi: {
-    nav_home: "होम", nav_jobs: "नौकरियाँ", nav_employers: "नियोक्ता", nav_plans: "प्लान", nav_contact: "संपर्क",
-    btn_login: "लॉगिन", btn_signup: "साइन अप",
-    hero_title: "नौकरी खोजें और पोस्ट करें — तेज़, ग्लोबल और आधुनिक",
-    hero_sub: "बहुभाषी, रेटिंग्स, बिज़नेस विज्ञापन, और सुरक्षित PayPal सब्सक्रिप्शन",
-    cta_find_jobs: "नौकरी खोजें", cta_post_job: "जॉब पोस्ट करें",
-    jobs_title: "जॉब सर्च", label_country: "देश", label_city: "शहर",
-    btn_search: "खोजें", btn_near_me: "मेरे पास", btn_global: "वैश्विक",
-    employers_title: "नियोक्ता", post_job: "जॉब पोस्ट करें",
-    label_title: "शीर्षक", label_language: "आवश्यक भाषा", label_desc: "विवरण",
-    btn_post_job: "प्रकाशित करें",
-    rate_entities: "रेटिंग्स", label_rate_worker: "वर्कर रेट करें", label_rate_employer: "नियोक्ता रेट करें",
-    btn_submit: "सबमिट",
-    plans_title: "सब्सक्रिप्शन प्लान", plan_jobseeker: "जॉब सीकर", plan_employer: "नियोक्ता",
-    contact_title: "संपर्क", label_name: "नाम", label_email: "ईमेल", label_message: "संदेश", btn_send: "भेजें"
-  }
-};
+  <section id="pricing" class="container card">
+    <h2 data-i18n="pricing_title">מנויים</h2>
+    <div class="grid2">
+      <div class="pricebox">
+        <h3 data-i18n="plan_seeker">מחפש עבודה</h3>
+        <div id="paypal-jobseeker"></div>
+      </div>
+      <div class="pricebox">
+        <h3 data-i18n="plan_employer">מעסיק</h3>
+        <div id="paypal-employer"></div>
+      </div>
+    </div>
+  </section>
 
-function applyI18n(lang) {
-  const dict = I18N[lang] || I18N.en;
-  document.querySelectorAll("[data-i18n]").forEach(el => {
-    const key = el.getAttribute("data-i18n");
-    if (dict[key]) el.textContent = dict[key];
-  });
-  // Switch direction
-  const rtl = (lang === "he");
-  document.documentElement.dir = rtl ? "rtl" : "ltr";
-  document.documentElement.lang = lang;
-  localStorage.setItem("qh_lang", lang);
-}
+  <section id="contact" class="container card">
+    <h2 data-i18n="contact_title">צור קשר</h2>
+    <div class="grid2">
+      <label>
+        <span data-i18n="label_name">שם</span>
+        <input id="c_name" placeholder="השם שלך">
+      </label>
+      <label>
+        <span data-i18n="label_email">אימייל</span>
+        <input id="c_email" placeholder="name@example.com">
+      </label>
+    </div>
+    <label>
+      <span data-i18n="label_message">הודעה</span>
+      <textarea id="c_msg" rows="4" placeholder="במה אפשר לעזור?"></textarea>
+    </label>
+    <div class="cta">
+      <button id="btnSend" class="btn" data-i18n="btn_send">שלח</button>
+      <a id="mailto" class="btn ghost" href="mailto:servicesquickhire@gmail.com">או שלח אימייל</a>
+    </div>
+  </section>
 
-// ---------- Profanity Filter (basic) ----------
-const BAD_WORDS = [
-  // Hebrew (sample)
-  "מילהבוטה1","מילהבוטה2",
-  // English
-  "damn","shit","fuck",
-  // Russian (sample)
-  "сука","бляд",
-  // Georgian/Hindi placeholders
-  "გინება","गाली"
-];
-function cleanTextOrBlock(text) {
-  let blocked = false;
-  let out = text;
-  BAD_WORDS.forEach(w => {
-    const re = new RegExp(`\\b${w}\\b`,"gi");
-    if (re.test(out)) { blocked = true; out = out.replace(re,"***"); }
-  });
-  return {blocked, out};
-}
+  <footer class="container small muted">
+    © <span id="year"></span> QuickHire • <span data-i18n="footer_all">כל הזכויות שמורות</span>
+  </footer>
 
-// ---------- Firebase Init (placeholder if config incomplete) ----------
-let firebaseApp = null;
-let db = null;
-let auth = null;
-(async () => {
-  try {
-    // load Firebase SDKs dynamically
-    const script1 = document.createElement("script");
-    script1.src = "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js";
-    document.head.appendChild(script1);
-    await new Promise(r=>script1.onload=r);
-    const script2 = document.createElement("script");
-    script2.src = "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js";
-    document.head.appendChild(script2);
-    const script3 = document.createElement("script");
-    script3.src = "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js";
-    document.head.appendChild(script3);
-    await new Promise(r=>script3.onload=r);
-
-    firebaseApp = firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    auth = firebase.auth();
-    console.log("Firebase initialized");
-  } catch(e) {
-    console.warn("Firebase not initialized yet. Fill firebaseConfig.", e);
-  }
-})();
-
-// ---------- Auth (minimal demo) ----------
-document.getElementById("signupBtn").addEventListener("click", async () => {
-  if (!auth) return alert("Firebase not ready");
-  const email = prompt("Email:");
-  const pass = prompt("Password:");
-  if (!email || !pass) return;
-  await auth.createUserWithEmailAndPassword(email, pass);
-  alert("Signed up!");
-});
-document.getElementById("loginBtn").addEventListener("click", async () => {
-  if (!auth) return alert("Firebase not ready");
-  const email = prompt("Email:");
-  const pass = prompt("Password:");
-  if (!email || !pass) return;
-  await auth.signInWithEmailAndPassword(email, pass);
-  alert("Logged in!");
-});
-
-// ---------- Language selector ----------
-const langSelect = document.getElementById("langSelect");
-langSelect.addEventListener("change", e => applyI18n(e.target.value));
-applyI18n(localStorage.getItem("qh_lang") || "he");
-
-// ---------- Ads Carousel (from Firestore or demo) ----------
-async function loadAds(country) {
-  const container = document.getElementById("adsCarousel");
-  container.innerHTML = "";
-  let items = [];
-  if (db) {
-    let q = db.collection("ads").where("active","==",true);
-    if (country) {
-      // show country + Global
-      const snap = await q.get();
-      items = snap.docs.map(d=>({id:d.id, ...d.data()}))
-        .filter(a => (a.country === country || a.country === "Global"));
-    } else {
-      const snap = await q.get();
-      items = snap.docs.map(d=>({id:d.id, ...d.data()})).filter(a=>a.country==="Global");
-    }
-  } else {
-    // demo content
-    items = [
-      {title:"Logistics Co. Tel Aviv", image:"https://picsum.photos/seed/ad1/600/300", link:"#", country:"Israel"},
-      {title:"Tech Recruiters Mumbai", image:"https://picsum.photos/seed/ad2/600/300", link:"#", country:"India"},
-      {title:"Global HR", image:"https://picsum.photos/seed/ad3/600/300", link:"#", country:"Global"}
-    ];
-  }
-  items.forEach(ad => {
-    const card = document.createElement("a");
-    card.className = "ad";
-    card.href = ad.link || "#";
-    card.target = "_blank";
-    card.innerHTML = `<img src="${ad.image}" alt="${ad.title}"><div class="row between"><strong>${ad.title}</strong><span class="tag">${ad.country||"Global"}</span></div>`;
-    container.appendChild(card);
-  });
-}
-loadAds(null);
-
-// ---------- Jobs: Post & Search ----------
-document.getElementById("btnPostJob").addEventListener("click", async () => {
-  const title = document.getElementById("jobTitle").value.trim();
-  const desc = document.getElementById("jobDesc").value.trim();
-  const country = document.getElementById("jobCountry").value.trim();
-  const city = document.getElementById("jobCity").value.trim();
-  const lang = document.getElementById("jobLang").value.trim();
-  const lat = parseFloat(document.getElementById("jobLat").value || "0");
-  const lng = parseFloat(document.getElementById("jobLng").value || "0");
-
-  // profanity check
-  const cleanDesc = cleanTextOrBlock(desc);
-  if (cleanDesc.blocked) {
-    document.getElementById("postJobMsg").textContent = "הטקסט כלל מילים לא מתאימות — הוחלפו בכוכביות.";
-  }
-
-  if (!db) return alert("Firebase not ready");
-  await db.collection("jobs").add({
-    title, description: cleanDesc.out, country, city, lang, lat, lng,
-    createdAt: new Date().toISOString()
-  });
-  document.getElementById("postJobMsg").textContent = "המשרה נשמרה בהצלחה!";
-});
-
-async function renderJobs(list) {
-  const host = document.getElementById("jobsResults");
-  host.innerHTML = "";
-  list.forEach(j => {
-    const item = document.createElement("div");
-    item.className = "cardItem";
-    item.innerHTML = `<div class="row between"><strong>${j.title}</strong><span class="tag">${j.lang||"any"}</span></div>
-    <div class="muted">${j.country||""}${j.city?", "+j.city:""}</div>
-    <p>${j.description||""}</p>`;
-    host.appendChild(item);
-  });
-}
-
-document.getElementById("btnSearch").addEventListener("click", async () => {
-  if (!db) { 
-    // demo
-    return renderJobs([
-      {title:"Driver", lang:"he", country:"Israel", city:"Tel Aviv", description:"עבודה מיידית"},
-      {title:"Engineer", lang:"en", country:"India", city:"Mumbai", description:"Full time role"}
-    ]);
-  }
-  const country = document.getElementById("searchCountry").value.trim();
-  const city = document.getElementById("searchCity").value.trim();
-  let col = db.collection("jobs");
-  let snap = await col.get();
-  let rows = snap.docs.map(d=>d.data());
-  if (country) rows = rows.filter(r => (r.country||"").toLowerCase() === country.toLowerCase());
-  if (city) rows = rows.filter(r => (r.city||"").toLowerCase() === city.toLowerCase());
-  renderJobs(rows);
-});
-
-document.getElementById("btnGlobal").addEventListener("click", async () => {
-  if (!db) return renderJobs([]);
-  const snap = await db.collection("jobs").get();
-  renderJobs(snap.docs.map(d=>d.data()));
-});
-
-document.getElementById("btnNearMe").addEventListener("click", () => {
-  if (!navigator.geolocation) return alert("Geolocation not supported");
-  navigator.geolocation.getCurrentPosition(async (pos) => {
-    const {latitude, longitude} = pos.coords;
-    if (!db) return renderJobs([]);
-    const snap = await db.collection("jobs").get();
-    const rows = snap.docs.map(d=>d.data()).filter(r => r.lat && r.lng);
-    // naive sort by distance
-    rows.sort((a,b)=>{
-      const da = Math.hypot((a.lat - latitude), (a.lng - longitude));
-      const dbb = Math.hypot((b.lat - latitude), (b.lng - longitude));
-      return da - dbb;
-    });
-    renderJobs(rows.slice(0,20));
-  });
-});
-
-// ---------- Ratings ----------
-async function addRating(kind, targetId, stars, review) {
-  if (!db) return alert("Firebase not ready");
-  const clean = cleanTextOrBlock(review || "");
-  await db.collection("ratings").add({
-    kind, // "worker" | "employer"
-    targetId, stars, review: clean.out,
-    createdAt: new Date().toISOString()
-  });
-}
-
-document.getElementById("btnRateWorker").addEventListener("click", async () => {
-  const id = document.getElementById("rateWorkerId").value.trim();
-  const stars = Number(document.getElementById("rateWorkerStars").value);
-  const rev = document.getElementById("rateWorkerReview").value.trim();
-  await addRating("worker", id, stars, rev);
-  document.getElementById("ratingsMsg").textContent = "דירוג עובד נשמר.";
-});
-document.getElementById("btnRateEmployer").addEventListener("click", async () => {
-  const id = document.getElementById("rateEmployerId").value.trim();
-  const stars = Number(document.getElementById("rateEmployerStars").value);
-  const rev = document.getElementById("rateEmployerReview").value.trim();
-  await addRating("employer", id, stars, rev);
-  document.getElementById("ratingsMsg").textContent = "דירוג מעסיק נשמר.";
-});
-
-// ---------- PayPal Buttons ----------
-if (window.paypal) {
-  paypal.Buttons({
-    style:{ shape:"pill", color:"blue", layout:"vertical", label:"subscribe" },
-    createSubscription: (_, actions) => actions.subscription.create({ plan_id: PLAN_JOBSEEKER }),
-    onApprove: (data) => alert("נרשמת כמחפש עבודה! ID: "+data.subscriptionID)
-  }).render("#paypal-jobseeker");
-
-  paypal.Buttons({
-    style:{ shape:"pill", color:"gold", layout:"vertical", label:"subscribe" },
-    createSubscription: (_, actions) => actions.subscription.create({ plan_id: PLAN_EMPLOYER }),
-    onApprove: (data) => alert("נרשמת כמעסיק! ID: "+data.subscriptionID)
-  }).render("#paypal-employer");
-}
-
-// ---------- Contact Form ----------
-document.getElementById("mailtoFallback").href = `mailto:${CONTACT_EMAIL}`;
-document.getElementById("btnSendContact").addEventListener("click", async () => {
-  const name = document.getElementById("contactName").value.trim();
-  const email = document.getElementById("contactEmail").value.trim();
-  const msg = document.getElementById("contactMsg").value.trim();
-  const clean = cleanTextOrBlock(msg);
-  if (!db) {
-    document.getElementById("contactStatus").textContent = "Firebase לא מוכן — משתמשים בשליחה דרך מייל.";
-    return;
-  }
-  await db.collection("contact_messages").add({
-    name, email, message: clean.out, createdAt: new Date().toISOString()
-  });
-  document.getElementById("contactStatus").textContent = "הודעה נשמרה ונשלחה לבדיקה. נעדכן במייל.";
-  // (optional future) Cloud Function to send email to CONTACT_EMAIL
-});
-
-// ---------- Restore ads by country when searching ----------
-document.getElementById("searchCountry").addEventListener("change", (e)=>{
-  const val = e.target.value.trim();
-  loadAds(val || null);
-});
+  <script src="app.js"></script>
+</body>
+</html>
