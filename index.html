@@ -1,206 +1,389 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QuickHire Platform</title>
+// =========================
+// QuickHire Single Script
+// =========================
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&family=Noto+Sans+Hebrew&family=Noto+Sans+Arabic&family=Noto+Sans+Devanagari&family=Noto+Sans+Georgian&display=swap" rel="stylesheet">
+// ---------- Config (EDIT HERE) ----------
+// 1) Firebase Config (paste your real config)
+const firebaseConfig = {
+  apiKey: "REPLACE_API_KEY", // e.g. AIza...
+  authDomain: "quickhire-9df90.firebaseapp.com",
+  projectId: "quickhire-9df90",
+  storageBucket: "quickhire-9df90.appspot.com",
+  messagingSenderId: "REPLACE_SENDER_ID",
+  appId: "REPLACE_APP_ID"
+};
 
-  <style>
-    body { font-family: "Noto Sans", sans-serif; margin:0; background:#fdfdfd; color:#333; }
-    header { background:#2b3a67; color:white; padding:15px; text-align:center; }
-    nav a { margin:0 10px; color:white; text-decoration:none; font-weight:bold; }
-    main { padding:20px; text-align:center; }
-    .section { margin:40px 0; }
-    .paypal-container { margin:20px auto; padding:15px; border:1px solid #ddd; border-radius:8px; width:300px; background:#fafafa; }
-    .rating { margin:10px 0; }
-    .stars { cursor:pointer; font-size:20px; }
-    .carousel { display:flex; overflow:auto; gap:15px; margin:20px auto; max-width:600px; }
-    .carousel img { height:120px; border-radius:8px; }
-    button { margin:5px; padding:8px 12px; cursor:pointer; }
-    html[lang="he"] body { font-family:"Noto Sans Hebrew",sans-serif; }
-    html[lang="ar"] body { font-family:"Noto Sans Arabic",sans-serif; }
-    html[lang="hi"] body { font-family:"Noto Sans Devanagari",sans-serif; }
-    html[lang="ka"] body { font-family:"Noto Sans Georgian",sans-serif; }
-  </style>
-</head>
-<body>
-  <header>
-    <h1 data-i18n="headline">QuickHire Platform</h1>
-    <nav>
-      <a href="#" data-i18n="home">Home</a>
-      <a href="#jobs" data-i18n="jobs">Jobs</a>
-      <a href="#pricing" data-i18n="pricing">Pricing</a>
-      <a href="#ads" data-i18n="ads">Ads</a>
-      <a href="#ratings" data-i18n="ratings">Ratings</a>
-      <a href="#contact" data-i18n="contact">Contact</a>
-    </nav>
-    <label data-i18n="languageLabel">Language</label>
-    <select id="languageSwitcher">
-      <option value="en">English</option>
-      <option value="he">עברית</option>
-      <option value="ar">العربية</option>
-      <option value="ru">Русский</option>
-      <option value="hi">हिंदी</option>
-      <option value="ka">ქართული</option>
-    </select>
-  </header>
+// 2) PayPal Plan IDs (already provided)
+const PLAN_JOBSEEKER = "P-8AF53156WM20433KND5BGZQ";
+const PLAN_EMPLOYER  = "P-50PZ57320D270111MNDR7CSA";
 
-  <main>
-    <!-- Firebase Auth -->
-    <section class="section">
-      <h2 data-i18n="authSection">User Login</h2>
-      <button id="signup-btn" data-i18n="signup">Sign Up</button>
-      <button id="login-jobseeker" data-i18n="loginJobSeeker">Login as Job Seeker</button>
-      <button id="login-employer" data-i18n="loginEmployer">Login as Employer</button>
-      <button id="logout-btn" data-i18n="logout">Logout</button>
-      <p id="current-user" data-i18n="currentUser">No user logged in</p>
-    </section>
+// 3) Contact email fallback
+const CONTACT_EMAIL = "servicesquickhire@gmail.com";
 
-    <!-- Hero Section -->
-    <section class="section">
-      <h2 data-i18n="findTalent">Find a job or hire talent quickly</h2>
-      <button data-i18n="browseJobs">Browse Jobs</button>
-      <button data-i18n="pricingBtn">Pricing</button>
-    </section>
+// ---------- i18n ----------
+const I18N = {
+  he: {
+    nav_home: "דף הבית",
+    nav_jobs: "חיפוש עבודה",
+    nav_employers: "מעסיקים",
+    nav_plans: "מנויים",
+    nav_contact: "צור קשר",
+    btn_login: "כניסה",
+    btn_signup: "הרשמה",
+    hero_title: "מציאת עבודה ופרסום משרות — מהר, גלובלי ומהודר",
+    hero_sub: "ריבוי שפות, דירוגים, פרסום לעסקים, ותשלומי מנוי מאובטחים ב־PayPal",
+    cta_find_jobs: "חפש משרות",
+    cta_post_job: "פרסם משרה",
+    jobs_title: "חיפוש משרות",
+    label_country: "מדינה",
+    label_city: "עיר",
+    btn_search: "חיפוש",
+    btn_near_me: "משרות סביבי",
+    btn_global: "גלובלי",
+    employers_title: "אזור מעסיקים",
+    post_job: "פרסום משרה",
+    label_title: "כותרת",
+    label_language: "שפה נדרשת",
+    label_desc: "תיאור",
+    btn_post_job: "פרסם",
+    rate_entities: "דירוגים",
+    label_rate_worker: "דירוג עובד",
+    label_rate_employer: "דירוג מעסיק",
+    btn_submit: "שלח",
+    plans_title: "מסלולי מנוי",
+    plan_jobseeker: "מחפש עבודה",
+    plan_employer: "מעסיק",
+    contact_title: "צור קשר",
+    label_name: "שם",
+    label_email: "אימייל",
+    label_message: "הודעה",
+    btn_send: "שלח"
+  },
+  en: {
+    nav_home: "Home", nav_jobs: "Jobs", nav_employers: "Employers", nav_plans: "Plans", nav_contact: "Contact",
+    btn_login: "Log in", btn_signup: "Sign up",
+    hero_title: "Find jobs & post openings — fast, global, refined",
+    hero_sub: "Multilingual, ratings, business ads, and secure PayPal subscriptions",
+    cta_find_jobs: "Find jobs", cta_post_job: "Post a job",
+    jobs_title: "Job Search", label_country: "Country", label_city: "City",
+    btn_search: "Search", btn_near_me: "Near me", btn_global: "Global",
+    employers_title: "Employers", post_job: "Post a job",
+    label_title: "Title", label_language: "Required language", label_desc: "Description",
+    btn_post_job: "Publish",
+    rate_entities: "Ratings", label_rate_worker: "Rate worker", label_rate_employer: "Rate employer",
+    btn_submit: "Submit",
+    plans_title: "Subscription Plans", plan_jobseeker: "Job Seeker", plan_employer: "Employer",
+    contact_title: "Contact", label_name: "Name", label_email: "Email", label_message: "Message", btn_send: "Send"
+  },
+  ru: {
+    nav_home: "Главная", nav_jobs: "Вакансии", nav_employers: "Работодателям", nav_plans: "Подписки", nav_contact: "Контакты",
+    btn_login: "Войти", btn_signup: "Регистрация",
+    hero_title: "Поиск работы и размещение вакансий — быстро и глобально",
+    hero_sub: "Мультиязычность, рейтинги, реклама и безопасные подписки PayPal",
+    cta_find_jobs: "Найти работу", cta_post_job: "Добавить вакансию",
+    jobs_title: "Поиск вакансий", label_country: "Страна", label_city: "Город",
+    btn_search: "Поиск", btn_near_me: "Рядом", btn_global: "Глобально",
+    employers_title: "Работодатели", post_job: "Добавить вакансию",
+    label_title: "Название", label_language: "Язык", label_desc: "Описание",
+    btn_post_job: "Опубликовать",
+    rate_entities: "Рейтинги", label_rate_worker: "Оценить работника", label_rate_employer: "Оценить работодателя",
+    btn_submit: "Отправить",
+    plans_title: "Тарифы", plan_jobseeker: "Соискатель", plan_employer: "Работодатель",
+    contact_title: "Связаться", label_name: "Имя", label_email: "Email", label_message: "Сообщение", btn_send: "Отправить"
+  },
+  ka: {
+    nav_home: " მთავარი", nav_jobs: "ვაკანსიები", nav_employers: "დამსაქმებლები", nav_plans: "გეგმა", nav_contact: "კონტაქტი",
+    btn_login: "შესვლა", btn_signup: "რეგისტრაცია",
+    hero_title: "სამუშაოს მოძებნა და ვაკანსიის გამოქვეყნება — სწრაფად და გლობალურად",
+    hero_sub: "მრავალენოვნება, რეიტინგები, რეკლამა და PayPal გამოწერები",
+    cta_find_jobs: "მოძებნე სამუშაო", cta_post_job: "გამოქვეყნი ვაკანსია",
+    jobs_title: "ვაკანსიების ძიება", label_country: "ქვეყანა", label_city: "ქალაქი",
+    btn_search: "ძებნა", btn_near_me: "ჩემთან ახლოს", btn_global: "გლობალური",
+    employers_title: "დამსაქმებლები", post_job: "ვაკანსიის გამოქვეყნება",
+    label_title: "სათაური", label_language: "საჭირო ენა", label_desc: "აღწერა",
+    btn_post_job: "გამოქვეყნება",
+    rate_entities: "რეიტინგები", label_rate_worker: "დასაქმებულის რეიტინგი", label_rate_employer: "დამსაქმებლის რეიტინგი",
+    btn_submit: "გაგზავნა",
+    plans_title: "გამოწერის გეგმები", plan_jobseeker: "მოძიებლი", plan_employer: "დამსაქმებელი",
+    contact_title: "კონტაქტი", label_name: "სახელი", label_email: "ელ.ფოსტა", label_message: "შეტყობინება", btn_send: "გაგზავნა"
+  },
+  hi: {
+    nav_home: "होम", nav_jobs: "नौकरियाँ", nav_employers: "नियोक्ता", nav_plans: "प्लान", nav_contact: "संपर्क",
+    btn_login: "लॉगिन", btn_signup: "साइन अप",
+    hero_title: "नौकरी खोजें और पोस्ट करें — तेज़, ग्लोबल और आधुनिक",
+    hero_sub: "बहुभाषी, रेटिंग्स, बिज़नेस विज्ञापन, और सुरक्षित PayPal सब्सक्रिप्शन",
+    cta_find_jobs: "नौकरी खोजें", cta_post_job: "जॉब पोस्ट करें",
+    jobs_title: "जॉब सर्च", label_country: "देश", label_city: "शहर",
+    btn_search: "खोजें", btn_near_me: "मेरे पास", btn_global: "वैश्विक",
+    employers_title: "नियोक्ता", post_job: "जॉब पोस्ट करें",
+    label_title: "शीर्षक", label_language: "आवश्यक भाषा", label_desc: "विवरण",
+    btn_post_job: "प्रकाशित करें",
+    rate_entities: "रेटिंग्स", label_rate_worker: "वर्कर रेट करें", label_rate_employer: "नियोक्ता रेट करें",
+    btn_submit: "सबमिट",
+    plans_title: "सब्सक्रिप्शन प्लान", plan_jobseeker: "जॉब सीकर", plan_employer: "नियोक्ता",
+    contact_title: "संपर्क", label_name: "नाम", label_email: "ईमेल", label_message: "संदेश", btn_send: "भेजें"
+  }
+};
 
-    <!-- Ads Carousel -->
-    <section id="ads" class="section">
-      <h3 data-i18n="ads">Ads</h3>
-      <div class="carousel">
-        <img src="https://via.placeholder.com/200x120?text=Ad+1" alt="Ad 1">
-        <img src="https://via.placeholder.com/200x120?text=Ad+2" alt="Ad 2">
-        <img src="https://via.placeholder.com/200x120?text=Ad+3" alt="Ad 3">
-      </div>
-    </section>
+function applyI18n(lang) {
+  const dict = I18N[lang] || I18N.en;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (dict[key]) el.textContent = dict[key];
+  });
+  // Switch direction
+  const rtl = (lang === "he");
+  document.documentElement.dir = rtl ? "rtl" : "ltr";
+  document.documentElement.lang = lang;
+  localStorage.setItem("qh_lang", lang);
+}
 
-    <!-- Ratings -->
-    <section id="ratings" class="section">
-      <h3 data-i18n="ratings">Ratings</h3>
-      <div class="rating">
-        <span class="stars" onclick="rate(1)">★</span>
-        <span class="stars" onclick="rate(2)">★</span>
-        <span class="stars" onclick="rate(3)">★</span>
-        <span class="stars" onclick="rate(4)">★</span>
-        <span class="stars" onclick="rate(5)">★</span>
-      </div>
-      <p id="rating-result">No rating yet</p>
-    </section>
+// ---------- Profanity Filter (basic) ----------
+const BAD_WORDS = [
+  // Hebrew (sample)
+  "מילהבוטה1","מילהבוטה2",
+  // English
+  "damn","shit","fuck",
+  // Russian (sample)
+  "сука","бляд",
+  // Georgian/Hindi placeholders
+  "გინება","गाली"
+];
+function cleanTextOrBlock(text) {
+  let blocked = false;
+  let out = text;
+  BAD_WORDS.forEach(w => {
+    const re = new RegExp(`\\b${w}\\b`,"gi");
+    if (re.test(out)) { blocked = true; out = out.replace(re,"***"); }
+  });
+  return {blocked, out};
+}
 
-    <!-- Pricing + PayPal -->
-    <section id="pricing" class="section">
-      <h3 data-i18n="plans">Subscription Plans</h3>
-      <div class="paypal-container">
-        <h4 data-i18n="paySeeker">Pay $1 (Job Seeker)</h4>
-        <div id="paypal-button-container-seeker"></div>
-      </div>
-      <div class="paypal-container">
-        <h4 data-i18n="payEmployer">Pay $10 (Employer)</h4>
-        <div id="paypal-button-container-employer"></div>
-      </div>
-    </section>
-  </main>
+// ---------- Firebase Init (placeholder if config incomplete) ----------
+let firebaseApp = null;
+let db = null;
+let auth = null;
+(async () => {
+  try {
+    // load Firebase SDKs dynamically
+    const script1 = document.createElement("script");
+    script1.src = "https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js";
+    document.head.appendChild(script1);
+    await new Promise(r=>script1.onload=r);
+    const script2 = document.createElement("script");
+    script2.src = "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js";
+    document.head.appendChild(script2);
+    const script3 = document.createElement("script");
+    script3.src = "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js";
+    document.head.appendChild(script3);
+    await new Promise(r=>script3.onload=r);
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    firebaseApp = firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    auth = firebase.auth();
+    console.log("Firebase initialized");
+  } catch(e) {
+    console.warn("Firebase not initialized yet. Fill firebaseConfig.", e);
+  }
+})();
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAvPicIsM1k2sIJGTZhBSLWhvZf-jMlSdw",
-      authDomain: "quickhire-9df90.firebaseapp.com",
-      projectId: "quickhire-9df90",
-      storageBucket: "quickhire-9df90.firebasestorage.app",
-      messagingSenderId: "1092742554135",
-      appId: "1:1092742554135:web:b01f260d1da74dccfff252"
-    };
+// ---------- Auth (minimal demo) ----------
+document.getElementById("signupBtn").addEventListener("click", async () => {
+  if (!auth) return alert("Firebase not ready");
+  const email = prompt("Email:");
+  const pass = prompt("Password:");
+  if (!email || !pass) return;
+  await auth.createUserWithEmailAndPassword(email, pass);
+  alert("Signed up!");
+});
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  if (!auth) return alert("Firebase not ready");
+  const email = prompt("Email:");
+  const pass = prompt("Password:");
+  if (!email || !pass) return;
+  await auth.signInWithEmailAndPassword(email, pass);
+  alert("Logged in!");
+});
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+// ---------- Language selector ----------
+const langSelect = document.getElementById("langSelect");
+langSelect.addEventListener("change", e => applyI18n(e.target.value));
+applyI18n(localStorage.getItem("qh_lang") || "he");
 
-    document.getElementById("signup-btn").addEventListener("click", () => {
-      const email = prompt("Enter email:");
-      const password = prompt("Enter password (min 6 chars):");
-      if (email && password) {
-        createUserWithEmailAndPassword(auth, email, password)
-          .then(userCredential => alert("User created: " + userCredential.user.email))
-          .catch(err => alert("Error: " + err.message));
-      }
-    });
-
-    document.getElementById("login-jobseeker").addEventListener("click", () => {
-      const email = prompt("Job Seeker email:");
-      const password = prompt("Password:");
-      if (email && password) {
-        signInWithEmailAndPassword(auth, email, password)
-          .then(userCredential => alert("Logged in as: " + userCredential.user.email))
-          .catch(err => alert("Login failed: " + err.message));
-      }
-    });
-
-    document.getElementById("login-employer").addEventListener("click", () => {
-      const email = prompt("Employer email:");
-      const password = prompt("Password:");
-      if (email && password) {
-        signInWithEmailAndPassword(auth, email, password)
-          .then(userCredential => alert("Logged in as: " + userCredential.user.email))
-          .catch(err => alert("Login failed: " + err.message));
-      }
-    });
-
-    document.getElementById("logout-btn").addEventListener("click", () => {
-      signOut(auth).then(() => alert("Logged out"));
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      const el = document.getElementById("current-user");
-      el.textContent = user ? "Current user: " + user.email : "No user logged in";
-    });
-  </script>
-
-  <!-- PayPal SDK -->
-  <script src="https://www.paypal.com/sdk/js?client-id=AWoW0dpbH_Ihf_2CWv5nTGMKy79eGneATxUft33orCWJmxIyUyIezjz7apOjXfVK3CRWynz6v8MggFhz&vault=true&intent=subscription"></script>
-  
-  <script>
-    // --- Translations (כולל גיאורגית ka) ---
-    const translations = {
-      en:{headline:"Multilingual Job Board with Ads, Ratings and PayPal payments",home:"Home",jobs:"Jobs",pricing:"Pricing",ads:"Ads",ratings:"Ratings",contact:"Contact",languageLabel:"Language",authSection:"User Login",signup:"Sign Up",loginJobSeeker:"Login as Job Seeker",loginEmployer:"Login as Employer",logout:"Logout",currentUser:"No user logged in",findTalent:"Find talent or job quickly — instantly",browseJobs:"Browse Jobs",pricingBtn:"Pricing",plans:"Subscription Plans",paySeeker:"Pay $1 (Job Seeker)",payEmployer:"Pay $10 (Employer)"},
-      he:{headline:"לוח משרות רב-לשוני עם מודעות, דירוגים ותשלומי PayPal",home:"בית",jobs:"משרות",pricing:"מחירים",ads:"מודעות",ratings:"דירוגים",contact:"צור קשר",languageLabel:"שפה",authSection:"כניסת משתמש",signup:"הרשמה",loginJobSeeker:"כניסה כמחפש עבודה",loginEmployer:"כניסה כמעסיק",logout:"התנתק",currentUser:"אין משתמש מחובר",findTalent:"מצא עבודה או עובדים במהירות",browseJobs:"עיון במשרות",pricingBtn:"מחירים",plans:"תוכניות מנוי",paySeeker:"שלם $1 (מחפש עבודה)",payEmployer:"שלם $10 (מעסיק)"},
-      ar:{headline:"لوحة وظائف متعددة اللغات مع إعلانات وتقييمات ومدفوعات PayPal",home:"الصفحة الرئيسية",jobs:"وظائف",pricing:"الأسعار",ads:"إعلانات",ratings:"تقييمات",contact:"اتصال",languageLabel:"اللغة",authSection:"تسجيل الدخول",signup:"اشتراك",loginJobSeeker:"دخول كباحث عمل",loginEmployer:"دخول كصاحب عمل",logout:"تسجيل الخروج",currentUser:"لا يوجد مستخدم",findTalent:"ابحث عن وظيفة أو موظفين بسرعة",browseJobs:"تصفح الوظائف",pricingBtn:"الأسعار",plans:"خطط الاشتراك",paySeeker:"ادفع $1 (باحث عمل)",payEmployer:"ادفع $10 (صاحب عمل)"},
-      ru:{headline:"Многоязычная доска вакансий с объявлениями, рейтингами и платежами PayPal",home:"Главная",jobs:"Вакансии",pricing:"Цены",ads:"Объявления",ratings:"Рейтинги",contact:"Контакты",languageLabel:"Язык",authSection:"Вход",signup:"Регистрация",loginJobSeeker:"Войти как соискатель",loginEmployer:"Войти как работодатель",logout:"Выйти",currentUser:"Нет пользователя",findTalent:"Найдите работу или сотрудников быстро",browseJobs:"Посмотреть вакансии",pricingBtn:"Цены",plans:"Планы подписки",paySeeker:"Заплатить $1 (Соискатель)",payEmployer:"Заплатить $10 (Работодатель)"},
-      hi:{headline:"विज्ञापनों, रेटिंग्स और PayPal भुगतान के साथ बहुभाषी जॉब बोर्ड",home:"मुख्य पृष्ठ",jobs:"नौकरियाँ",pricing:"मूल्य",ads:"विज्ञापन",ratings:"रेटिंग्स",contact:"संपर्क",languageLabel:"भाषा",authSection:"लॉगिन",signup:"साइन अप",loginJobSeeker:"जॉब सीकर लॉगिन",loginEmployer:"एम्प्लॉयर लॉगिन",logout:"लॉग आउट",currentUser:"कोई उपयोगकर्ता नहीं",findTalent:"तेजी से प्रतिभा खोजें या नौकरी पाएं",browseJobs:"नौकरियाँ देखें",pricingBtn:"मूल्य",plans:"सदस्यता योजनाएँ",paySeeker:"Pay $1 (जॉब सीकर)",payEmployer:"Pay $10 (एम्प्लॉयर)"},
-      ka:{headline:"მრავალენოვანი სამუშაოს პლატფორმა რეკლამებით, შეფასებებით და PayPal გადახდებით",home:"მთავარი",jobs:"სამუშაოები",pricing:"ფასები",ads:"რეკლამები",ratings:"შეფასებები",contact:"კონტაქტი",languageLabel:"ენა",authSection:"შესვლა",signup:"რეგისტრაცია",loginJobSeeker:"შესვლა სამუშაოს მაძიებლად",loginEmployer:"შესვლა დამსაქმებლად",logout:"გასვლა",currentUser:"მომხმარებელი არ არის შესული",findTalent:"იპოვე სამსახური ან ნიჭი სწრაფად",browseJobs:"სამუშაოების ნახვა",pricingBtn:"ფასები",plans:"გამოწერის გეგმები",paySeeker:"გადაიხადე $1 (სამუშაოს მაძიებელი)",payEmployer:"გადაიხადე $10 (დამსაქმებელი)"}
-    };
-
-    function setLanguage(lang){
-      document.documentElement.lang=lang;
-      document.documentElement.dir=(lang==="ar"||lang==="he")?"rtl":"ltr";
-      document.querySelectorAll("[data-i18n]").forEach(el=>{
-        let key=el.getAttribute("data-i18n");
-        el.innerText=translations[lang][key]||key;
-      });
+// ---------- Ads Carousel (from Firestore or demo) ----------
+async function loadAds(country) {
+  const container = document.getElementById("adsCarousel");
+  container.innerHTML = "";
+  let items = [];
+  if (db) {
+    let q = db.collection("ads").where("active","==",true);
+    if (country) {
+      // show country + Global
+      const snap = await q.get();
+      items = snap.docs.map(d=>({id:d.id, ...d.data()}))
+        .filter(a => (a.country === country || a.country === "Global"));
+    } else {
+      const snap = await q.get();
+      items = snap.docs.map(d=>({id:d.id, ...d.data()})).filter(a=>a.country==="Global");
     }
-    document.getElementById("languageSwitcher").addEventListener("change",(e)=>setLanguage(e.target.value));
-    setLanguage("en");
+  } else {
+    // demo content
+    items = [
+      {title:"Logistics Co. Tel Aviv", image:"https://picsum.photos/seed/ad1/600/300", link:"#", country:"Israel"},
+      {title:"Tech Recruiters Mumbai", image:"https://picsum.photos/seed/ad2/600/300", link:"#", country:"India"},
+      {title:"Global HR", image:"https://picsum.photos/seed/ad3/600/300", link:"#", country:"Global"}
+    ];
+  }
+  items.forEach(ad => {
+    const card = document.createElement("a");
+    card.className = "ad";
+    card.href = ad.link || "#";
+    card.target = "_blank";
+    card.innerHTML = `<img src="${ad.image}" alt="${ad.title}"><div class="row between"><strong>${ad.title}</strong><span class="tag">${ad.country||"Global"}</span></div>`;
+    container.appendChild(card);
+  });
+}
+loadAds(null);
 
-    // Ratings
-    function rate(stars){ document.getElementById("rating-result").innerText="You rated: "+stars+" stars"; }
+// ---------- Jobs: Post & Search ----------
+document.getElementById("btnPostJob").addEventListener("click", async () => {
+  const title = document.getElementById("jobTitle").value.trim();
+  const desc = document.getElementById("jobDesc").value.trim();
+  const country = document.getElementById("jobCountry").value.trim();
+  const city = document.getElementById("jobCity").value.trim();
+  const lang = document.getElementById("jobLang").value.trim();
+  const lat = parseFloat(document.getElementById("jobLat").value || "0");
+  const lng = parseFloat(document.getElementById("jobLng").value || "0");
 
-    // PayPal Buttons
-    paypal.Buttons({
-      style:{shape:'rect',color:'blue',layout:'vertical',label:'subscribe'},
-      createSubscription:(data,actions)=>actions.subscription.create({plan_id:'P-4FX60355E4825273N'}),
-      onApprove:(data)=>alert("Job Seeker Subscription ID: "+data.subscriptionID)
-    }).render('#paypal-button-container-seeker');
+  // profanity check
+  const cleanDesc = cleanTextOrBlock(desc);
+  if (cleanDesc.blocked) {
+    document.getElementById("postJobMsg").textContent = "הטקסט כלל מילים לא מתאימות — הוחלפו בכוכביות.";
+  }
 
-    paypal.Buttons({
-      style:{shape:'rect',color:'gold',layout:'vertical',label:'subscribe'},
-      createSubscription:(data,actions)=>actions.subscription.create({plan_id:'P-50P257320D270111MNDR7GSA'}),
-      onApprove:(data)=>alert("Employer Subscription ID: "+data.subscriptionID)
-    }).render('#paypal-button-container-employer');
-  </script>
-  
-</body>
-</html>
+  if (!db) return alert("Firebase not ready");
+  await db.collection("jobs").add({
+    title, description: cleanDesc.out, country, city, lang, lat, lng,
+    createdAt: new Date().toISOString()
+  });
+  document.getElementById("postJobMsg").textContent = "המשרה נשמרה בהצלחה!";
+});
+
+async function renderJobs(list) {
+  const host = document.getElementById("jobsResults");
+  host.innerHTML = "";
+  list.forEach(j => {
+    const item = document.createElement("div");
+    item.className = "cardItem";
+    item.innerHTML = `<div class="row between"><strong>${j.title}</strong><span class="tag">${j.lang||"any"}</span></div>
+    <div class="muted">${j.country||""}${j.city?", "+j.city:""}</div>
+    <p>${j.description||""}</p>`;
+    host.appendChild(item);
+  });
+}
+
+document.getElementById("btnSearch").addEventListener("click", async () => {
+  if (!db) { 
+    // demo
+    return renderJobs([
+      {title:"Driver", lang:"he", country:"Israel", city:"Tel Aviv", description:"עבודה מיידית"},
+      {title:"Engineer", lang:"en", country:"India", city:"Mumbai", description:"Full time role"}
+    ]);
+  }
+  const country = document.getElementById("searchCountry").value.trim();
+  const city = document.getElementById("searchCity").value.trim();
+  let col = db.collection("jobs");
+  let snap = await col.get();
+  let rows = snap.docs.map(d=>d.data());
+  if (country) rows = rows.filter(r => (r.country||"").toLowerCase() === country.toLowerCase());
+  if (city) rows = rows.filter(r => (r.city||"").toLowerCase() === city.toLowerCase());
+  renderJobs(rows);
+});
+
+document.getElementById("btnGlobal").addEventListener("click", async () => {
+  if (!db) return renderJobs([]);
+  const snap = await db.collection("jobs").get();
+  renderJobs(snap.docs.map(d=>d.data()));
+});
+
+document.getElementById("btnNearMe").addEventListener("click", () => {
+  if (!navigator.geolocation) return alert("Geolocation not supported");
+  navigator.geolocation.getCurrentPosition(async (pos) => {
+    const {latitude, longitude} = pos.coords;
+    if (!db) return renderJobs([]);
+    const snap = await db.collection("jobs").get();
+    const rows = snap.docs.map(d=>d.data()).filter(r => r.lat && r.lng);
+    // naive sort by distance
+    rows.sort((a,b)=>{
+      const da = Math.hypot((a.lat - latitude), (a.lng - longitude));
+      const dbb = Math.hypot((b.lat - latitude), (b.lng - longitude));
+      return da - dbb;
+    });
+    renderJobs(rows.slice(0,20));
+  });
+});
+
+// ---------- Ratings ----------
+async function addRating(kind, targetId, stars, review) {
+  if (!db) return alert("Firebase not ready");
+  const clean = cleanTextOrBlock(review || "");
+  await db.collection("ratings").add({
+    kind, // "worker" | "employer"
+    targetId, stars, review: clean.out,
+    createdAt: new Date().toISOString()
+  });
+}
+
+document.getElementById("btnRateWorker").addEventListener("click", async () => {
+  const id = document.getElementById("rateWorkerId").value.trim();
+  const stars = Number(document.getElementById("rateWorkerStars").value);
+  const rev = document.getElementById("rateWorkerReview").value.trim();
+  await addRating("worker", id, stars, rev);
+  document.getElementById("ratingsMsg").textContent = "דירוג עובד נשמר.";
+});
+document.getElementById("btnRateEmployer").addEventListener("click", async () => {
+  const id = document.getElementById("rateEmployerId").value.trim();
+  const stars = Number(document.getElementById("rateEmployerStars").value);
+  const rev = document.getElementById("rateEmployerReview").value.trim();
+  await addRating("employer", id, stars, rev);
+  document.getElementById("ratingsMsg").textContent = "דירוג מעסיק נשמר.";
+});
+
+// ---------- PayPal Buttons ----------
+if (window.paypal) {
+  paypal.Buttons({
+    style:{ shape:"pill", color:"blue", layout:"vertical", label:"subscribe" },
+    createSubscription: (_, actions) => actions.subscription.create({ plan_id: PLAN_JOBSEEKER }),
+    onApprove: (data) => alert("נרשמת כמחפש עבודה! ID: "+data.subscriptionID)
+  }).render("#paypal-jobseeker");
+
+  paypal.Buttons({
+    style:{ shape:"pill", color:"gold", layout:"vertical", label:"subscribe" },
+    createSubscription: (_, actions) => actions.subscription.create({ plan_id: PLAN_EMPLOYER }),
+    onApprove: (data) => alert("נרשמת כמעסיק! ID: "+data.subscriptionID)
+  }).render("#paypal-employer");
+}
+
+// ---------- Contact Form ----------
+document.getElementById("mailtoFallback").href = `mailto:${CONTACT_EMAIL}`;
+document.getElementById("btnSendContact").addEventListener("click", async () => {
+  const name = document.getElementById("contactName").value.trim();
+  const email = document.getElementById("contactEmail").value.trim();
+  const msg = document.getElementById("contactMsg").value.trim();
+  const clean = cleanTextOrBlock(msg);
+  if (!db) {
+    document.getElementById("contactStatus").textContent = "Firebase לא מוכן — משתמשים בשליחה דרך מייל.";
+    return;
+  }
+  await db.collection("contact_messages").add({
+    name, email, message: clean.out, createdAt: new Date().toISOString()
+  });
+  document.getElementById("contactStatus").textContent = "הודעה נשמרה ונשלחה לבדיקה. נעדכן במייל.";
+  // (optional future) Cloud Function to send email to CONTACT_EMAIL
+});
+
+// ---------- Restore ads by country when searching ----------
+document.getElementById("searchCountry").addEventListener("change", (e)=>{
+  const val = e.target.value.trim();
+  loadAds(val || null);
+});
