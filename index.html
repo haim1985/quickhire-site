@@ -8,7 +8,8 @@
   <h1>QuickHire - Firebase Test</h1>
 
   <button id="signup-btn">Sign Up</button>
-  <button id="login-btn">Login</button>
+  <button id="login-jobseeker">Login as Job Seeker</button>
+  <button id="login-employer">Login as Employer</button>
   <button id="logout-btn">Logout</button>
   <p id="current-user">No user logged in</p>
 
@@ -48,14 +49,27 @@
       }
     });
 
-    // Login
-    document.getElementById("login-btn").addEventListener("click", () => {
-      const email = prompt("Enter email:");
+    // Login (Job Seeker)
+    document.getElementById("login-jobseeker").addEventListener("click", () => {
+      const email = prompt("Enter Job Seeker email:");
       const password = prompt("Enter password:");
       if (email && password) {
         signInWithEmailAndPassword(auth, email, password)
           .then(userCredential => {
-            alert("✅ Logged in: " + userCredential.user.email);
+            alert("✅ Job Seeker logged in: " + userCredential.user.email);
+          })
+          .catch(err => alert("❌ Login failed: " + err.message));
+      }
+    });
+
+    // Login (Employer)
+    document.getElementById("login-employer").addEventListener("click", () => {
+      const email = prompt("Enter Employer email:");
+      const password = prompt("Enter password:");
+      if (email && password) {
+        signInWithEmailAndPassword(auth, email, password)
+          .then(userCredential => {
+            alert("✅ Employer logged in: " + userCredential.user.email);
           })
           .catch(err => alert("❌ Login failed: " + err.message));
       }
