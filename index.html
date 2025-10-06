@@ -2,166 +2,111 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>QuickHire</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuickHire Platform</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&family=Noto+Sans+Hebrew&family=Noto+Sans+Arabic&family=Noto+Sans+Devanagari&family=Noto+Sans+Georgian&display=swap" rel="stylesheet">
+
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fdfdfd;
-      color: #333;
-      margin: 0;
-      padding: 0;
-    }
-    nav {
-      background: #eae1df;
-      padding: 10px;
-    }
-    nav ul {
-      list-style: none;
-      display: flex;
-      justify-content: center;
-      margin: 0;
-      padding: 0;
-    }
-    nav ul li {
-      margin: 0 15px;
-    }
-    nav ul li a {
-      text-decoration: none;
-      color: #333;
-      font-weight: bold;
-    }
-    section {
-      padding: 20px;
-      border-bottom: 1px solid #ddd;
-    }
-    button {
-      margin: 5px;
-      padding: 8px 12px;
-      background: #0d6efd;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0b5ed7;
-    }
-    .carousel {
-      display: flex;
-      overflow-x: auto;
-    }
-    .carousel .ad {
-      min-width: 200px;
-      padding: 10px;
-      margin: 5px;
-      background: #f0f0f0;
-      border-radius: 5px;
-    }
-    input, textarea {
-      display: block;
-      margin: 8px 0;
-      padding: 8px;
-      width: 90%;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
+    body { font-family: "Noto Sans", sans-serif; margin:0; background:#fdfdfd; color:#333; }
+    header { background:#2b3a67; color:white; padding:15px; text-align:center; }
+    nav a { margin:0 10px; color:white; text-decoration:none; font-weight:bold; }
+    main { padding:20px; text-align:center; }
+    .section { margin:40px 0; }
+    .paypal-container { margin:20px auto; padding:15px; border:1px solid #ddd; border-radius:8px; width:300px; background:#fafafa; }
+    .rating { margin:10px 0; }
+    .stars { cursor:pointer; font-size:20px; }
+    .carousel { display:flex; overflow:auto; gap:15px; margin:20px auto; max-width:600px; }
+    .carousel img { height:120px; border-radius:8px; }
+    button { margin:5px; padding:8px 12px; cursor:pointer; }
+    html[lang="he"] body { font-family:"Noto Sans Hebrew",sans-serif; }
+    html[lang="ar"] body { font-family:"Noto Sans Arabic",sans-serif; }
+    html[lang="hi"] body { font-family:"Noto Sans Devanagari",sans-serif; }
+    html[lang="ka"] body { font-family:"Noto Sans Georgian",sans-serif; }
   </style>
 </head>
 <body>
-  <!-- תפריט עליון -->
-  <nav>
-    <ul>
-      <li><a href="#home">Home</a></li>
-      <li><a href="#jobs">Jobs</a></li>
-      <li><a href="#pricing">Pricing</a></li>
-      <li><a href="#guide">Guide</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-  </nav>
-
-  <!-- קרוסלת פרסומות -->
-  <section id="ads">
-    <h2>Sponsored Ads</h2>
-    <div class="carousel">
-      <div class="ad">Ad 1 - Your Business Here</div>
-      <div class="ad">Ad 2 - Promote Globally</div>
-      <div class="ad">Ad 3 - Reach Job Seekers</div>
-    </div>
-  </section>
-
-  <!-- אזור התחברות -->
-  <section id="auth">
-    <h2>Login / Sign Up</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <div>
-      <button id="signup-btn">Sign Up</button>
-      <button id="login-jobseeker">Login as Job Seeker</button>
-      <button id="login-employer">Login as Employer</button>
-      <button id="logout-btn">Logout</button>
-    </div>
-    <p id="current-user">No user logged in</p>
-  </section>
-
-  <!-- קורות חיים -->
-  <section id="resume">
-    <h2>Upload Resume</h2>
-    <input type="file" id="resume-upload">
-    <button id="upload-btn">Upload</button>
-  </section>
-
-  <!-- פרסום משרה -->
-  <section id="job-post">
-    <h2>Post a Job</h2>
-    <input type="text" id="job-title" placeholder="Job Title">
-    <textarea id="job-desc" placeholder="Job Description"></textarea>
-    <button id="post-job-btn">Post Job</button>
-  </section>
-
-  <!-- דירוג עובדים -->
-  <section id="rating">
-    <h2>Rate Employee</h2>
-    <input type="text" id="employee-email" placeholder="Employee Email">
-    <select id="rating-score">
-      <option value="5">⭐⭐⭐⭐⭐</option>
-      <option value="4">⭐⭐⭐⭐</option>
-      <option value="3">⭐⭐⭐</option>
-      <option value="2">⭐⭐</option>
-      <option value="1">⭐</option>
+  <header>
+    <h1 data-i18n="headline">QuickHire Platform</h1>
+    <nav>
+      <a href="#" data-i18n="home">Home</a>
+      <a href="#jobs" data-i18n="jobs">Jobs</a>
+      <a href="#pricing" data-i18n="pricing">Pricing</a>
+      <a href="#ads" data-i18n="ads">Ads</a>
+      <a href="#ratings" data-i18n="ratings">Ratings</a>
+      <a href="#contact" data-i18n="contact">Contact</a>
+    </nav>
+    <label data-i18n="languageLabel">Language</label>
+    <select id="languageSwitcher">
+      <option value="en">English</option>
+      <option value="he">עברית</option>
+      <option value="ar">العربية</option>
+      <option value="ru">Русский</option>
+      <option value="hi">हिंदी</option>
+      <option value="ka">ქართული</option>
     </select>
-    <button id="rate-btn">Submit Rating</button>
-  </section>
+  </header>
 
-  <!-- תשלום -->
-  <section id="pricing">
-    <h2>Pricing</h2>
-    <p>Job Seeker: Free basic (up to 2 applications/day), $1/month unlimited</p>
-    <p>Employer: $10/month for unlimited job posts</p>
-    <div id="paypal-button-container"></div>
-  </section>
+  <main>
+    <!-- Firebase Auth -->
+    <section class="section">
+      <h2 data-i18n="authSection">User Login</h2>
+      <button id="signup-btn" data-i18n="signup">Sign Up</button>
+      <button id="login-jobseeker" data-i18n="loginJobSeeker">Login as Job Seeker</button>
+      <button id="login-employer" data-i18n="loginEmployer">Login as Employer</button>
+      <button id="logout-btn" data-i18n="logout">Logout</button>
+      <p id="current-user" data-i18n="currentUser">No user logged in</p>
+    </section>
 
-  <!-- שפות -->
-  <section id="languages">
-    <h2>Choose Language</h2>
-    <button onclick="setLanguage('en')">English</button>
-    <button onclick="setLanguage('he')">עברית</button>
-    <button onclick="setLanguage('ka')">ქართული</button>
-  </section>
+    <!-- Hero Section -->
+    <section class="section">
+      <h2 data-i18n="findTalent">Find a job or hire talent quickly</h2>
+      <button data-i18n="browseJobs">Browse Jobs</button>
+      <button data-i18n="pricingBtn">Pricing</button>
+    </section>
 
-  <!-- Firebase + JS -->
-  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
+    <!-- Ads Carousel -->
+    <section id="ads" class="section">
+      <h3 data-i18n="ads">Ads</h3>
+      <div class="carousel">
+        <img src="https://via.placeholder.com/200x120?text=Ad+1" alt="Ad 1">
+        <img src="https://via.placeholder.com/200x120?text=Ad+2" alt="Ad 2">
+        <img src="https://via.placeholder.com/200x120?text=Ad+3" alt="Ad 3">
+      </div>
+    </section>
+
+    <!-- Ratings -->
+    <section id="ratings" class="section">
+      <h3 data-i18n="ratings">Ratings</h3>
+      <div class="rating">
+        <span class="stars" onclick="rate(1)">★</span>
+        <span class="stars" onclick="rate(2)">★</span>
+        <span class="stars" onclick="rate(3)">★</span>
+        <span class="stars" onclick="rate(4)">★</span>
+        <span class="stars" onclick="rate(5)">★</span>
+      </div>
+      <p id="rating-result">No rating yet</p>
+    </section>
+
+    <!-- Pricing + PayPal -->
+    <section id="pricing" class="section">
+      <h3 data-i18n="plans">Subscription Plans</h3>
+      <div class="paypal-container">
+        <h4 data-i18n="paySeeker">Pay $1 (Job Seeker)</h4>
+        <div id="paypal-button-container-seeker"></div>
+      </div>
+      <div class="paypal-container">
+        <h4 data-i18n="payEmployer">Pay $10 (Employer)</h4>
+        <div id="paypal-button-container-employer"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { 
-      getAuth, 
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword, 
-      signOut, 
-      onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
-    import { 
-      getFirestore, doc, setDoc, addDoc, collection 
-    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAvPicIsM1k2sIJGTZhBSLWhvZf-jMlSdw",
@@ -174,94 +119,87 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
 
-    // Sign up
     document.getElementById("signup-btn").addEventListener("click", () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      createUserWithEmailAndPassword(auth, email, password)
-        .then(userCredential => {
-          alert("✅ User created: " + userCredential.user.email);
-        })
-        .catch(err => alert("❌ Signup failed: " + err.message));
+      const email = prompt("Enter email:");
+      const password = prompt("Enter password (min 6 chars):");
+      if (email && password) {
+        createUserWithEmailAndPassword(auth, email, password)
+          .then(userCredential => alert("User created: " + userCredential.user.email))
+          .catch(err => alert("Error: " + err.message));
+      }
     });
 
-    // Login Job Seeker
     document.getElementById("login-jobseeker").addEventListener("click", () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => alert("✅ Job Seeker logged in"))
-        .catch(err => alert("❌ Login failed: " + err.message));
+      const email = prompt("Job Seeker email:");
+      const password = prompt("Password:");
+      if (email && password) {
+        signInWithEmailAndPassword(auth, email, password)
+          .then(userCredential => alert("Logged in as: " + userCredential.user.email))
+          .catch(err => alert("Login failed: " + err.message));
+      }
     });
 
-    // Login Employer
     document.getElementById("login-employer").addEventListener("click", () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => alert("✅ Employer logged in"))
-        .catch(err => alert("❌ Login failed: " + err.message));
+      const email = prompt("Employer email:");
+      const password = prompt("Password:");
+      if (email && password) {
+        signInWithEmailAndPassword(auth, email, password)
+          .then(userCredential => alert("Logged in as: " + userCredential.user.email))
+          .catch(err => alert("Login failed: " + err.message));
+      }
     });
 
-    // Logout
     document.getElementById("logout-btn").addEventListener("click", () => {
-      signOut(auth).then(() => {
-        alert("👋 Logged out");
-      });
+      signOut(auth).then(() => alert("Logged out"));
     });
 
-    // Track login state
     onAuthStateChanged(auth, (user) => {
       const el = document.getElementById("current-user");
       el.textContent = user ? "Current user: " + user.email : "No user logged in";
     });
+  </script>
 
-    // Upload Resume
-    document.getElementById("upload-btn").addEventListener("click", async () => {
-      const file = document.getElementById("resume-upload").files[0];
-      if (file) {
-        alert("📄 Resume uploaded (demo) – need Firebase Storage for real save");
-      }
-    });
-
-    // Post Job
-    document.getElementById("post-job-btn").addEventListener("click", async () => {
-      const title = document.getElementById("job-title").value;
-      const desc = document.getElementById("job-desc").value;
-      if (title && desc) {
-        await addDoc(collection(db, "jobs"), { title, desc });
-        alert("✅ Job posted!");
-      }
-    });
-
-    // Rating
-    document.getElementById("rate-btn").addEventListener("click", async () => {
-      const email = document.getElementById("employee-email").value;
-      const score = document.getElementById("rating-score").value;
-      if (email && score) {
-        await setDoc(doc(db, "ratings", email), { score });
-        alert("⭐ Rating submitted!");
-      }
-    });
-
-    // PayPal integration
-    paypal.Buttons({
-      createSubscription: function(data, actions) {
-        return actions.subscription.create({
-          'plan_id': 'P-XXXX' // כאן צריך לשים את ה-plan id שלך מ-PayPal
-        });
-      },
-      onApprove: function(data, actions) {
-        alert("✅ Subscription active: " + data.subscriptionID);
-      }
-    }).render('#paypal-button-container');
-
-    // Language
-    window.setLanguage = (lang) => {
-      alert("🌍 Language switched to " + lang);
+  <!-- PayPal SDK -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AWoW0dpbH_Ihf_2CWv5nTGMKy79eGneATxUft33orCWJmxIyUyIezjz7apOjXfVK3CRWynz6v8MggFhz&vault=true&intent=subscription"></script>
+  
+  <script>
+    // --- Translations (כולל גיאורגית ka) ---
+    const translations = {
+      en:{headline:"Multilingual Job Board with Ads, Ratings and PayPal payments",home:"Home",jobs:"Jobs",pricing:"Pricing",ads:"Ads",ratings:"Ratings",contact:"Contact",languageLabel:"Language",authSection:"User Login",signup:"Sign Up",loginJobSeeker:"Login as Job Seeker",loginEmployer:"Login as Employer",logout:"Logout",currentUser:"No user logged in",findTalent:"Find talent or job quickly — instantly",browseJobs:"Browse Jobs",pricingBtn:"Pricing",plans:"Subscription Plans",paySeeker:"Pay $1 (Job Seeker)",payEmployer:"Pay $10 (Employer)"},
+      he:{headline:"לוח משרות רב-לשוני עם מודעות, דירוגים ותשלומי PayPal",home:"בית",jobs:"משרות",pricing:"מחירים",ads:"מודעות",ratings:"דירוגים",contact:"צור קשר",languageLabel:"שפה",authSection:"כניסת משתמש",signup:"הרשמה",loginJobSeeker:"כניסה כמחפש עבודה",loginEmployer:"כניסה כמעסיק",logout:"התנתק",currentUser:"אין משתמש מחובר",findTalent:"מצא עבודה או עובדים במהירות",browseJobs:"עיון במשרות",pricingBtn:"מחירים",plans:"תוכניות מנוי",paySeeker:"שלם $1 (מחפש עבודה)",payEmployer:"שלם $10 (מעסיק)"},
+      ar:{headline:"لوحة وظائف متعددة اللغات مع إعلانات وتقييمات ومدفوعات PayPal",home:"الصفحة الرئيسية",jobs:"وظائف",pricing:"الأسعار",ads:"إعلانات",ratings:"تقييمات",contact:"اتصال",languageLabel:"اللغة",authSection:"تسجيل الدخول",signup:"اشتراك",loginJobSeeker:"دخول كباحث عمل",loginEmployer:"دخول كصاحب عمل",logout:"تسجيل الخروج",currentUser:"لا يوجد مستخدم",findTalent:"ابحث عن وظيفة أو موظفين بسرعة",browseJobs:"تصفح الوظائف",pricingBtn:"الأسعار",plans:"خطط الاشتراك",paySeeker:"ادفع $1 (باحث عمل)",payEmployer:"ادفع $10 (صاحب عمل)"},
+      ru:{headline:"Многоязычная доска вакансий с объявлениями, рейтингами и платежами PayPal",home:"Главная",jobs:"Вакансии",pricing:"Цены",ads:"Объявления",ratings:"Рейтинги",contact:"Контакты",languageLabel:"Язык",authSection:"Вход",signup:"Регистрация",loginJobSeeker:"Войти как соискатель",loginEmployer:"Войти как работодатель",logout:"Выйти",currentUser:"Нет пользователя",findTalent:"Найдите работу или сотрудников быстро",browseJobs:"Посмотреть вакансии",pricingBtn:"Цены",plans:"Планы подписки",paySeeker:"Заплатить $1 (Соискатель)",payEmployer:"Заплатить $10 (Работодатель)"},
+      hi:{headline:"विज्ञापनों, रेटिंग्स और PayPal भुगतान के साथ बहुभाषी जॉब बोर्ड",home:"मुख्य पृष्ठ",jobs:"नौकरियाँ",pricing:"मूल्य",ads:"विज्ञापन",ratings:"रेटिंग्स",contact:"संपर्क",languageLabel:"भाषा",authSection:"लॉगिन",signup:"साइन अप",loginJobSeeker:"जॉब सीकर लॉगिन",loginEmployer:"एम्प्लॉयर लॉगिन",logout:"लॉग आउट",currentUser:"कोई उपयोगकर्ता नहीं",findTalent:"तेजी से प्रतिभा खोजें या नौकरी पाएं",browseJobs:"नौकरियाँ देखें",pricingBtn:"मूल्य",plans:"सदस्यता योजनाएँ",paySeeker:"Pay $1 (जॉब सीकर)",payEmployer:"Pay $10 (एम्प्लॉयर)"},
+      ka:{headline:"მრავალენოვანი სამუშაოს პლატფორმა რეკლამებით, შეფასებებით და PayPal გადახდებით",home:"მთავარი",jobs:"სამუშაოები",pricing:"ფასები",ads:"რეკლამები",ratings:"შეფასებები",contact:"კონტაქტი",languageLabel:"ენა",authSection:"შესვლა",signup:"რეგისტრაცია",loginJobSeeker:"შესვლა სამუშაოს მაძიებლად",loginEmployer:"შესვლა დამსაქმებლად",logout:"გასვლა",currentUser:"მომხმარებელი არ არის შესული",findTalent:"იპოვე სამსახური ან ნიჭი სწრაფად",browseJobs:"სამუშაოების ნახვა",pricingBtn:"ფასები",plans:"გამოწერის გეგმები",paySeeker:"გადაიხადე $1 (სამუშაოს მაძიებელი)",payEmployer:"გადაიხადე $10 (დამსაქმებელი)"}
     };
+
+    function setLanguage(lang){
+      document.documentElement.lang=lang;
+      document.documentElement.dir=(lang==="ar"||lang==="he")?"rtl":"ltr";
+      document.querySelectorAll("[data-i18n]").forEach(el=>{
+        let key=el.getAttribute("data-i18n");
+        el.innerText=translations[lang][key]||key;
+      });
+    }
+    document.getElementById("languageSwitcher").addEventListener("change",(e)=>setLanguage(e.target.value));
+    setLanguage("en");
+
+    // Ratings
+    function rate(stars){ document.getElementById("rating-result").innerText="You rated: "+stars+" stars"; }
+
+    // PayPal Buttons
+    paypal.Buttons({
+      style:{shape:'rect',color:'blue',layout:'vertical',label:'subscribe'},
+      createSubscription:(data,actions)=>actions.subscription.create({plan_id:'P-4FX60355E4825273N'}),
+      onApprove:(data)=>alert("Job Seeker Subscription ID: "+data.subscriptionID)
+    }).render('#paypal-button-container-seeker');
+
+    paypal.Buttons({
+      style:{shape:'rect',color:'gold',layout:'vertical',label:'subscribe'},
+      createSubscription:(data,actions)=>actions.subscription.create({plan_id:'P-50P257320D270111MNDR7GSA'}),
+      onApprove:(data)=>alert("Employer Subscription ID: "+data.subscriptionID)
+    }).render('#paypal-button-container-employer');
   </script>
   
 </body>
