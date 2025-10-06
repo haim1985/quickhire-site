@@ -2,39 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>QuickHire - Auth System</title>
+  <title>QuickHire</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      background: #fdfdfd;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    nav {
+      background: #eae1df;
+      padding: 10px;
+    }
+    nav ul {
+      list-style: none;
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
       margin: 0;
+      padding: 0;
     }
-    .auth-box {
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      width: 320px;
-      text-align: center;
+    nav ul li {
+      margin: 0 15px;
     }
-    h2 {
-      margin-bottom: 20px;
-      color: #0d6efd;
+    nav ul li a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
     }
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+    section {
+      padding: 20px;
+      border-bottom: 1px solid #ddd;
     }
     button {
-      margin: 8px 5px;
-      padding: 10px 15px;
+      margin: 5px;
+      padding: 8px 12px;
       background: #0d6efd;
       color: white;
       border: none;
@@ -44,27 +46,110 @@
     button:hover {
       background: #0b5ed7;
     }
-    #current-user {
-      margin-top: 15px;
-      font-weight: bold;
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+    }
+    .carousel .ad {
+      min-width: 200px;
+      padding: 10px;
+      margin: 5px;
+      background: #f0f0f0;
+      border-radius: 5px;
+    }
+    input, textarea {
+      display: block;
+      margin: 8px 0;
+      padding: 8px;
+      width: 90%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <div class="auth-box">
-    <h2>QuickHire Login</h2>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
+  <!-- תפריט עליון -->
+  <nav>
+    <ul>
+      <li><a href="#home">Home</a></li>
+      <li><a href="#jobs">Jobs</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#guide">Guide</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
 
+  <!-- קרוסלת פרסומות -->
+  <section id="ads">
+    <h2>Sponsored Ads</h2>
+    <div class="carousel">
+      <div class="ad">Ad 1 - Your Business Here</div>
+      <div class="ad">Ad 2 - Promote Globally</div>
+      <div class="ad">Ad 3 - Reach Job Seekers</div>
+    </div>
+  </section>
+
+  <!-- אזור התחברות -->
+  <section id="auth">
+    <h2>Login / Sign Up</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
     <div>
       <button id="signup-btn">Sign Up</button>
-      <button id="login-btn">Login</button>
+      <button id="login-jobseeker">Login as Job Seeker</button>
+      <button id="login-employer">Login as Employer</button>
       <button id="logout-btn">Logout</button>
     </div>
-
     <p id="current-user">No user logged in</p>
-  </div>
+  </section>
 
+  <!-- קורות חיים -->
+  <section id="resume">
+    <h2>Upload Resume</h2>
+    <input type="file" id="resume-upload">
+    <button id="upload-btn">Upload</button>
+  </section>
+
+  <!-- פרסום משרה -->
+  <section id="job-post">
+    <h2>Post a Job</h2>
+    <input type="text" id="job-title" placeholder="Job Title">
+    <textarea id="job-desc" placeholder="Job Description"></textarea>
+    <button id="post-job-btn">Post Job</button>
+  </section>
+
+  <!-- דירוג עובדים -->
+  <section id="rating">
+    <h2>Rate Employee</h2>
+    <input type="text" id="employee-email" placeholder="Employee Email">
+    <select id="rating-score">
+      <option value="5">⭐⭐⭐⭐⭐</option>
+      <option value="4">⭐⭐⭐⭐</option>
+      <option value="3">⭐⭐⭐</option>
+      <option value="2">⭐⭐</option>
+      <option value="1">⭐</option>
+    </select>
+    <button id="rate-btn">Submit Rating</button>
+  </section>
+
+  <!-- תשלום -->
+  <section id="pricing">
+    <h2>Pricing</h2>
+    <p>Job Seeker: Free basic (up to 2 applications/day), $1/month unlimited</p>
+    <p>Employer: $10/month for unlimited job posts</p>
+    <div id="paypal-button-container"></div>
+  </section>
+
+  <!-- שפות -->
+  <section id="languages">
+    <h2>Choose Language</h2>
+    <button onclick="setLanguage('en')">English</button>
+    <button onclick="setLanguage('he')">עברית</button>
+    <button onclick="setLanguage('ka')">ქართული</button>
+  </section>
+
+  <!-- Firebase + JS -->
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import { 
@@ -74,8 +159,10 @@
       signOut, 
       onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    import { 
+      getFirestore, doc, setDoc, addDoc, collection 
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-    // Firebase config שלך
     const firebaseConfig = {
       apiKey: "AIzaSyAvPicIsM1k2sIJGTZhBSLWhvZf-jMlSdw",
       authDomain: "quickhire-9df90.firebaseapp.com",
@@ -87,6 +174,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
 
     // Sign up
     document.getElementById("signup-btn").addEventListener("click", () => {
@@ -99,14 +187,21 @@
         .catch(err => alert("❌ Signup failed: " + err.message));
     });
 
-    // Login
-    document.getElementById("login-btn").addEventListener("click", () => {
+    // Login Job Seeker
+    document.getElementById("login-jobseeker").addEventListener("click", () => {
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       signInWithEmailAndPassword(auth, email, password)
-        .then(userCredential => {
-          alert("✅ Logged in: " + userCredential.user.email);
-        })
+        .then(() => alert("✅ Job Seeker logged in"))
+        .catch(err => alert("❌ Login failed: " + err.message));
+    });
+
+    // Login Employer
+    document.getElementById("login-employer").addEventListener("click", () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => alert("✅ Employer logged in"))
         .catch(err => alert("❌ Login failed: " + err.message));
     });
 
@@ -117,11 +212,56 @@
       });
     });
 
-    // Track user
+    // Track login state
     onAuthStateChanged(auth, (user) => {
       const el = document.getElementById("current-user");
       el.textContent = user ? "Current user: " + user.email : "No user logged in";
     });
+
+    // Upload Resume
+    document.getElementById("upload-btn").addEventListener("click", async () => {
+      const file = document.getElementById("resume-upload").files[0];
+      if (file) {
+        alert("📄 Resume uploaded (demo) – need Firebase Storage for real save");
+      }
+    });
+
+    // Post Job
+    document.getElementById("post-job-btn").addEventListener("click", async () => {
+      const title = document.getElementById("job-title").value;
+      const desc = document.getElementById("job-desc").value;
+      if (title && desc) {
+        await addDoc(collection(db, "jobs"), { title, desc });
+        alert("✅ Job posted!");
+      }
+    });
+
+    // Rating
+    document.getElementById("rate-btn").addEventListener("click", async () => {
+      const email = document.getElementById("employee-email").value;
+      const score = document.getElementById("rating-score").value;
+      if (email && score) {
+        await setDoc(doc(db, "ratings", email), { score });
+        alert("⭐ Rating submitted!");
+      }
+    });
+
+    // PayPal integration
+    paypal.Buttons({
+      createSubscription: function(data, actions) {
+        return actions.subscription.create({
+          'plan_id': 'P-XXXX' // כאן צריך לשים את ה-plan id שלך מ-PayPal
+        });
+      },
+      onApprove: function(data, actions) {
+        alert("✅ Subscription active: " + data.subscriptionID);
+      }
+    }).render('#paypal-button-container');
+
+    // Language
+    window.setLanguage = (lang) => {
+      alert("🌍 Language switched to " + lang);
+    };
   </script>
   
 </body>
