@@ -1,1 +1,131 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QuickHire – פלטפורמת השמה</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;800&family=Rubik:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Firebase (compat so we can use a single script) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <!-- PayPal -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AWoW0dpbH_Ihf_2CWv5nTGMKy79eGneATxUft33orCWJmxIyUyIezjz7apOjXfVK3CRWynz6v8MggFhz&components=buttons&vault=true&intent=subscription"></script>
+</head>
+<body>
+  <header class="topbar container">
+    <div class="brand">QuickHire</div>
+    <nav class="nav">
+      <a data-i18n="nav_home" href="#home">ראשי</a>
+      <a data-i18n="nav_jobs" href="#jobs">משרות</a>
+      <a data-i18n="nav_employers" href="#employers">מעסיקים</a>
+      <a data-i18n="nav_pricing" href="#pricing">מנוי</a>
+      <a data-i18n="nav_contact" href="#contact">צור קשר</a>
+    </nav>
+    <select id="langSelect" class="lang">
+      <option value="he">עברית</option>
+      <option value="en">English</option>
+      <option value="ru">Русский</option>
+      <option value="ka">ქართული</option>
+      <option value="hi">हिन्दी</option>
+    </select>
+  </header>
+
+  <section id="home" class="hero container card">
+    <div>
+      <h1 data-i18n="hero_title">מציאת עבודה מהירה, חכמה ובינלאומית</h1>
+      <p data-i18n="hero_sub">פרסום משרות לפי מדינה/גלובלי, דירוג עובדים ומעסיקים ותשלום מנוי מאובטח בפייפאל.</p>
+      <div class="cta">
+        <a href="#pricing" class="btn primary" data-i18n="cta_start">צא לדרך</a>
+        <a href="#jobs" class="btn ghost" data-i18n="cta_find">חפש משרה</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="jobs" class="container card">
+    <h2 data-i18n="jobs_title">חיפוש משרות</h2>
+    <div class="grid2">
+      <label>
+        <span data-i18n="label_country">מדינה</span>
+        <input id="jobCountry" placeholder="Israel">
+      </label>
+      <label>
+        <span data-i18n="label_city">עיר</span>
+        <input id="jobCity" placeholder="Tel Aviv">
+      </label>
+    </div>
+    <button id="btnSearch" class="btn" data-i18n="btn_search">חפש</button>
+    <div id="jobsResults" class="list"></div>
+  </section>
+
+  <section id="employers" class="container card">
+    <h2 data-i18n="emp_title">למעסיקים</h2>
+    <p data-i18n="emp_text">פרסם משרה בקלות והגדל חשיפה מקומית או גלובלית.</p>
+    <div class="grid2">
+      <label>
+        <span data-i18n="label_job">תפקיד</span>
+        <input id="postJobTitle" placeholder="Full-Stack Developer">
+      </label>
+      <label>
+        <span data-i18n="label_desc">תיאור</span>
+        <textarea id="postJobDesc" rows="3" placeholder="דרישות תפקיד..."></textarea>
+      </label>
+      <label>
+        <span data-i18n="label_country">מדינה</span>
+        <input id="postCountry" placeholder="Israel">
+      </label>
+      <label>
+        <span data-i18n="label_city">עיר</span>
+        <input id="postCity" placeholder="Tel Aviv">
+      </label>
+    </div>
+    <button id="btnPostJob" class="btn" data-i18n="btn_post">פרסם</button>
+  </section>
+
+  <section id="pricing" class="container card">
+    <h2 data-i18n="pricing_title">מנויים</h2>
+    <div class="grid2">
+      <div class="pricebox">
+        <h3 data-i18n="plan_seeker">מחפש עבודה</h3>
+        <div id="paypal-jobseeker"></div>
+      </div>
+      <div class="pricebox">
+        <h3 data-i18n="plan_employer">מעסיק</h3>
+        <div id="paypal-employer"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="container card">
+    <h2 data-i18n="contact_title">צור קשר</h2>
+    <div class="grid2">
+      <label>
+        <span data-i18n="label_name">שם</span>
+        <input id="c_name" placeholder="השם שלך">
+      </label>
+      <label>
+        <span data-i18n="label_email">אימייל</span>
+        <input id="c_email" placeholder="name@example.com">
+      </label>
+    </div>
+    <label>
+      <span data-i18n="label_message">הודעה</span>
+      <textarea id="c_msg" rows="4" placeholder="במה אפשר לעזור?"></textarea>
+    </label>
+    <div class="cta">
+      <button id="btnSend" class="btn" data-i18n="btn_send">שלח</button>
+      <a id="mailto" class="btn ghost" href="mailto:servicesquickhire@gmail.com">או שלח אימייל</a>
+    </div>
+  </section>
+
+  <footer class="container small muted">
+    © <span id="year"></span> QuickHire • <span data-i18n="footer_all">כל הזכויות שמורות</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
 
