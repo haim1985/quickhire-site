@@ -1,0 +1,19 @@
+name: ChatGPT Cleanup
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CHATGPT_TEMP_TOKEN }}
+
+      - name: Show repository checked out
+        run: |
+          echo "Repository checked out successfully"
+          ls -la
