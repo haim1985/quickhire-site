@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MDS Ops Viewer</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;background:#f4f7fb;color:#1f2937}
+    header{background:#111827;color:#fff;padding:28px}
+    main{max-width:1100px;margin:0 auto;padding:24px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+    .card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+    a{color:#2563eb;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .btn{display:inline-block;background:#2563eb;color:#fff;padding:10px 14px;border-radius:10px;text-decoration:none}
+    .muted{color:#6b7280}
+    ul{padding-left:20px}
+  </style>
+</head>
+<body>
+<header>
+  <h1>MDS Ops Viewer</h1>
+  <p class="muted">Public viewer for selected MDS operational and training pages.</p>
+</header>
+<main>
+  <div class="card">
+    <h2>Start here</h2>
+    <p>This area contains browser-friendly pages for selected MDS materials.</p>
+  </div>
+  <div class="grid" style="margin-top:16px">
+    <div class="card">
+      <h3>Secretary Development</h3>
+      <p>Interactive self-study dashboard and learning guide for the BA growth path.</p>
+      <p><a class="btn" href="./secretary-dashboard.html">Open Dashboard</a></p>
+      <ul>
+        <li><a href="./secretary-guide.html">Open Learning Guide</a></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What this viewer is for</h3>
+      <ul>
+        <li>Open pages in a normal browser view</li>
+        <li>Give simple access without browsing raw GitHub files</li>
+        <li>Keep a clean entry point for future MDS public-facing tools</li>
+      </ul>
+    </div>
+  </div>
+</main>
+</body>
+</html>
